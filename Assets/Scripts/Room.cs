@@ -15,6 +15,8 @@ public class Room : MonoBehaviour {
 	List<RoomConnector> connectors = new List<RoomConnector>();
 	float volume;
 
+	public List<RoomConnector> Connectors { get { return connectors; } private set { connectors = value; } }
+
 
 	void Start()
 	{
@@ -38,6 +40,8 @@ public class Room : MonoBehaviour {
 				ForceApplierPoint.ApplyTo(obj, connector.transform.position, flowForce);
 			}
 		}
+		// Affect particles
+		RoomAtmosphere.UpdateParticles(this, Time.fixedDeltaTime);
 	}
 
 

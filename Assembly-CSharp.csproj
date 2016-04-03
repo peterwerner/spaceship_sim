@@ -45,12 +45,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\ForceApplierBase.cs" />
-     <Compile Include="Assets\ForceApplierDirectional.cs" />
-     <Compile Include="Assets\ForceApplierPoint.cs" />
-     <Compile Include="Assets\Room.cs" />
-     <Compile Include="Assets\RoomConnector.cs" />
-     <Compile Include="Assets\SingletonComponent.cs" />
+     <Compile Include="Assets\Scripts\ForceApplierBase.cs" />
+     <Compile Include="Assets\Scripts\ForceApplierDirectional.cs" />
+     <Compile Include="Assets\Scripts\ForceApplierPoint.cs" />
+     <Compile Include="Assets\Scripts\Room.cs" />
+     <Compile Include="Assets\Scripts\RoomAtmosphere.cs" />
+     <Compile Include="Assets\Scripts\RoomConnector.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
