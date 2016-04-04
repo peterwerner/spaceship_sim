@@ -15,14 +15,13 @@ public class FlowVoxelManager : SingletonComponent<FlowVoxelManager> {
 
 	float radius;
 	List<FlowVoxel> flowVoxels = new List<FlowVoxel>();
-	FlowVoxel ambientFlowVoxel;
 
 	public static float FlowVectorConstant { get { return FlowVoxelManager.Instance.flowVectorConstant; } }
 	public static float FlowForceConstant { get { return FlowVoxelManager.Instance.flowForceConstant; } }
 	public static float FlowRateConstant { get { return FlowVoxelManager.Instance.flowRateConstant; } }
 	public static float Radius { get { return FlowVoxelManager.Instance.radius; } }
+	public static float AmbientAtmosphere { get { return FlowVoxelManager.Instance.ambientAtmosphere; } }
 	public static List<FlowVoxel> FlowVoxels { get { return FlowVoxelManager.Instance.flowVoxels; } }
-	public static FlowVoxel AmbientFlowVoxel { get { return FlowVoxelManager.Instance.ambientFlowVoxel; } }
 
 
 
@@ -30,7 +29,6 @@ public class FlowVoxelManager : SingletonComponent<FlowVoxelManager> {
 	{
 		base.Awake();	
 		radius = voxelWidth / 2;
-		ambientFlowVoxel = new FlowVoxelConst(Vector3.zero, ambientAtmosphere);
 	}
 
 

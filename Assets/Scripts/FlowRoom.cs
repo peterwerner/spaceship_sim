@@ -122,6 +122,9 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		Gizmos.color = new Color(1, Mathf.Min(1, atmosphere), Mathf.Min(1, atmosphere));
 		if (boxCollider)
 			Gizmos.DrawWireCube(transform.position, Vector3.Scale(boxCollider.size, transform.lossyScale));
+		Gizmos.color = Color.yellow;
+		foreach (GameObject obj in ownedObjects)
+			Gizmos.DrawWireCube(obj.transform.position, obj.transform.lossyScale);
 	}
 
 }

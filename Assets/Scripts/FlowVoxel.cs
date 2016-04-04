@@ -6,7 +6,7 @@ public class FlowVoxel {
 
 	protected float atmosphere, atmosphereNext;
 	protected Vector3 flow, position;
-	List<FlowVoxel> neighbors = new List<FlowVoxel>();
+	protected List<FlowVoxel> neighbors = new List<FlowVoxel>();
 
 	public float Atmosphere	{ get { return atmosphere; } }
 	public Vector3 Flow	{ get { return flow; } }
@@ -32,16 +32,24 @@ public class FlowVoxel {
 
 	public virtual void UpdateNextStep(float timeStep)
 	{
-		float netAtmo = 0;
-		Vector3 netFlow = Vector3.zero;
+		float weightBaseline = 0.0001f;
+		float weightedNetAtmo = 0;
+		float sumWeights = 0;
+		Vector3 netDiff = Vector3.zero;
 		foreach (FlowVoxel neighbor in neighbors) 
 		{
-			netAtmo += neighbor.Atmosphere;
-			float diff = neighbor.Atmosphere - atmosphere;	// positive diff = inflow
-			netFlow += diff * (position - neighbor.position);
+			float weight = weightBaseline + neighbor.flow.magnitude;
+			weightedNetAtmo += weight * neighbor.atmosphere;
+			sumWeights += weight;
+			float diff = neighbor.atmosphere - atmosphere;	// positive diff = inflow
+			netDiff += diff * (position - neighbor.position);
 		}
-		flow = FlowVoxelManager.FlowVectorConstant * timeStep * netFlow / neighbors.Count;
-		float targetAtmo = netAtmo / neighbors.Count;
+		flow = FlowVoxelManager.FlowVectorConstant * timeStep * netDiff / neighbors.Count;
+		float targetAtmo = weightedNetAtmo / sumWeights;
+		if (float.IsNaN(flow.x)) {		// Edge case: no neighbors results in NaN's
+			flow = Vector3.zero;		//			  default to 0 vector
+			targetAtmo = atmosphere;	//			  default to self
+		}
 		float m = Mathf.Min(1, FlowVoxelManager.FlowRateConstant * timeStep);
 		atmosphereNext = (1-m) * atmosphere + m * targetAtmo;
 	}
@@ -72,7 +80,7 @@ public class FlowVoxel {
 
 
 	// Display the gizmo in the editor - this doesn't affect the actual game
-	public virtual void DrawGizmo(Vector3 roomPos) 
+	public void DrawGizmo(Vector3 roomPos) 
 	{
 		Gizmos.color = new Color(1, Mathf.Min(1, atmosphere), Mathf.Min(1, atmosphere));
 		//Gizmos.DrawWireCube(position, FlowVoxelManager.Radius * 2 * Vector3.one);

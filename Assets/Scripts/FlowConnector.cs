@@ -51,7 +51,7 @@ public class FlowConnector : MonoBehaviour {
 		if (!roomB) {
 			foreach (FlowVoxel voxel in roomA.FlowVoxels)
 				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) <= FlowVoxelManager.Radius)
-					pairList.Add(new FlowVoxel[] { voxel, FlowVoxelManager.AmbientFlowVoxel });
+					pairList.Add(new FlowVoxel[] { voxel, new FlowVoxelConst(boxCollider.ClosestPointOnBounds(voxel.Position), FlowVoxelManager.AmbientAtmosphere) });
 		}
 		// If roomB is NOT null, look at all voxels in A and B that are within one voxel-radius of the connector bounds
 		// For each of the A voxels, pair it with the closest B voxel (if no B voxel within one voxel-width, abandon the A voxel)
@@ -112,10 +112,6 @@ public class FlowConnector : MonoBehaviour {
 		Gizmos.color = isOpen ? Color.cyan : Color.magenta;
 		if (boxCollider)
 			Gizmos.DrawWireCube(transform.position, Vector3.Scale(boxCollider.size, transform.lossyScale));
-		if (roomA)
-			Gizmos.DrawLine(this.transform.position, roomA.transform.position);
-		if (roomB)
-			Gizmos.DrawLine(this.transform.position, roomB.transform.position);
 		Gizmos.color = Color.blue;
 		if (roomA && roomB) 
 			for (int i = 0; i < pairs.GetLength(0); i++)
