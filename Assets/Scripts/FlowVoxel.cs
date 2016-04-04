@@ -30,21 +30,21 @@ public class FlowVoxel {
 	}
 
 
-	public virtual void UpdateNextStep(float timeStep)
+	public void UpdateNextStep(float timeStep)
 	{
 		float weightBaseline = 0.0001f;
 		float weightedNetAtmo = 0;
 		float sumWeights = 0;
-		Vector3 netDiff = Vector3.zero;
+		Vector3 weightedNetFlow = Vector3.zero;
 		foreach (FlowVoxel neighbor in neighbors) 
 		{
 			float weight = weightBaseline + neighbor.flow.magnitude;
 			weightedNetAtmo += weight * neighbor.atmosphere;
 			sumWeights += weight;
 			float diff = neighbor.atmosphere - atmosphere;	// positive diff = inflow
-			netDiff += diff * (position - neighbor.position);
+			weightedNetFlow += weight * diff * (position - neighbor.position);
 		}
-		flow = FlowVoxelManager.FlowVectorConstant * timeStep * netDiff / neighbors.Count;
+		flow = FlowVoxelManager.FlowVectorConstant * timeStep * weightedNetFlow / sumWeights;
 		float targetAtmo = weightedNetAtmo / sumWeights;
 		if (float.IsNaN(flow.x)) {		// Edge case: no neighbors results in NaN's
 			flow = Vector3.zero;		//			  default to 0 vector
