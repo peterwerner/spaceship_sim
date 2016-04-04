@@ -9,6 +9,8 @@ public class FlowVoxel {
 	List<FlowVoxel> neighbors = new List<FlowVoxel>();
 
 	public float Atmosphere	{ get { return atmosphere; } }
+	public Vector3 Flow	{ get { return flow; } }
+	public Vector3 Position	{ get { return position; } }
 
 
 	public FlowVoxel(Vector3 position, float atmosphere)
@@ -40,8 +42,7 @@ public class FlowVoxel {
 		}
 		flow = FlowVoxelManager.FlowVectorConstant * timeStep * netFlow / neighbors.Count;
 		float targetAtmo = netAtmo / neighbors.Count;
-		float m = Mathf.Min(1, FlowVoxelManager.FlowRateConstant * timeStep) 
-				* (1 - Mathf.Pow(0.5f, FlowVoxelManager.FlowRateExponential));
+		float m = Mathf.Min(1, FlowVoxelManager.FlowRateConstant * timeStep);
 		atmosphereNext = (1-m) * atmosphere + m * targetAtmo;
 	}
 	public virtual void StepToNextStep(float timeStep)

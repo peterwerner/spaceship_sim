@@ -12,7 +12,7 @@ public class ForceApplierDirectional : ForceApplierBase {
 
 	public override void ApplyTo(GameObject obj)
 	{
-		ForceApplierBase.ApplyForce(obj, direction * force);
+		ForceApplierBase.ApplyAcceleration(obj, direction * acceleration);
 	}
 
 }

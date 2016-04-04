@@ -7,21 +7,23 @@ public class FlowVoxelManager : SingletonComponent<FlowVoxelManager> {
 	[SerializeField] [Range(0, 1)] float ambientAtmosphere = 0;
 	[SerializeField] [Range(0.1f, 4)] float voxelWidth = 1;
 	[SerializeField] [Tooltip("linearly scales the flow vector")] 
-	float flowVectorConstant = 50;
+	float flowVectorConstant = 1000;
+	[SerializeField] [Tooltip("linearly scales the flow force")] 
+	float flowForceConstant = 5;
 	[SerializeField] [Tooltip("linearly scales the flow rate. upper limited to number of physics updates per second")] 
 	float flowRateConstant = 50;
-	[SerializeField] [Tooltip("exponentially scales the flow rate")] 
-	float flowRateExponential = 10;
 
 	float radius;
 	List<FlowVoxel> flowVoxels = new List<FlowVoxel>();
 	FlowVoxel ambientFlowVoxel;
 
 	public static float FlowVectorConstant { get { return FlowVoxelManager.Instance.flowVectorConstant; } }
+	public static float FlowForceConstant { get { return FlowVoxelManager.Instance.flowForceConstant; } }
 	public static float FlowRateConstant { get { return FlowVoxelManager.Instance.flowRateConstant; } }
-	public static float FlowRateExponential { get { return FlowVoxelManager.Instance.flowRateExponential; } }
 	public static float Radius { get { return FlowVoxelManager.Instance.radius; } }
 	public static List<FlowVoxel> FlowVoxels { get { return FlowVoxelManager.Instance.flowVoxels; } }
+	public static FlowVoxel AmbientFlowVoxel { get { return FlowVoxelManager.Instance.ambientFlowVoxel; } }
+
 
 
 	override protected void Awake()

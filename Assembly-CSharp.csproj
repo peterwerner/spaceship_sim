@@ -52,10 +52,7 @@
      <Compile Include="Assets\Scripts\FlowVoxelManager.cs" />
      <Compile Include="Assets\Scripts\ForceApplierBase.cs" />
      <Compile Include="Assets\Scripts\ForceApplierDirectional.cs" />
-     <Compile Include="Assets\Scripts\ForceApplierPoint.cs" />
-     <Compile Include="Assets\Scripts\Room.cs" />
-     <Compile Include="Assets\Scripts\RoomAtmosphere.cs" />
-     <Compile Include="Assets\Scripts\RoomConnector.cs" />
+     <Compile Include="Assets\Scripts\ListComponent.cs" />
      <Compile Include="Assets\Scripts\SingletonComponent.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

@@ -2,27 +2,124 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof(BoxCollider))]
 public class FlowConnector : MonoBehaviour {
 
-	public bool isOpen = false; 
+	public bool isOpen = false;
+	bool wasOpen = false;
+	FlowRoom roomA = null, roomB = null;
+	BoxCollider boxCollider;
+	FlowVoxel[ , ] pairs;
 
-	FlowVoxel[][] pairs;
 
-
-	public bool Connect(Room A, Room B)
+	bool started = false;
+	void FixedUpdate()
 	{
-		return false;
+		if (!started) {
+			started = true;
+			LateStart();
+		}
+		if (wasOpen && !isOpen)
+			Close();
+		else if (!wasOpen && isOpen)
+			Open();
+		wasOpen = isOpen;
+	}
+		
+	void LateStart()
+	{
+		// Connect to the rooms that this is currently touching. This should connect to either 1 or 2 rooms.
+		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
+		foreach (FlowRoom room in FlowRoom.InstanceList) {
+			if (room.Collider.bounds.Intersects(boxCollider.bounds)) {
+				if (!roomA)
+					roomA = room;
+				else if (!roomB)
+					roomB = room;
+				else
+					print("Error: connector at " + this.transform.position.ToString() + " found more than 2 rooms. Ignoring extra rooms.");
+			}
+		}
+		if (!roomA) {
+			print("Error: connector at " + this.transform.position.ToString() + " found 0 rooms. Destroying connector.");
+			GameObject.Destroy(this.gameObject);
+			return;
+		}
+		// Register pairs of voxels, where each pair has one voxel from roomA and one from roomB
+		// If roomB is null, each pair has one voxel from roomA and the ambient atmosphere voxel
+		List<FlowVoxel[]> pairList = new List<FlowVoxel[]>();
+		if (!roomB) {
+			foreach (FlowVoxel voxel in roomA.FlowVoxels)
+				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) <= FlowVoxelManager.Radius)
+					pairList.Add(new FlowVoxel[] { voxel, FlowVoxelManager.AmbientFlowVoxel });
+		}
+		// If roomB is NOT null, look at all voxels in A and B that are within one voxel-radius of the connector bounds
+		// For each of the A voxels, pair it with the closest B voxel (if no B voxel within one voxel-width, abandon the A voxel)
+		else {
+			List<FlowVoxel> candidatesB = new List<FlowVoxel>();
+			foreach (FlowVoxel voxelB in roomB.FlowVoxels)
+				if (Vector3.Distance(voxelB.Position, boxCollider.ClosestPointOnBounds(voxelB.Position)) <= FlowVoxelManager.Radius)
+					candidatesB.Add(voxelB);
+			foreach (FlowVoxel voxelA in roomA.FlowVoxels) {
+				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) <= FlowVoxelManager.Radius) {
+					FlowVoxel closestInB = null;
+					float distanceBest = FlowVoxelManager.Radius * 4;
+					foreach (FlowVoxel voxelB in candidatesB) {
+						if (Vector3.Distance(voxelA.Position, voxelB.Position) <= distanceBest) {
+							closestInB = voxelB;
+							distanceBest = Vector3.Distance(voxelA.Position, voxelB.Position);
+						}
+					}
+					if (closestInB != null)
+						pairList.Add(new FlowVoxel[] { voxelA, closestInB });
+				}
+			}
+		}
+		// Convert list of pairs to array of pairs
+		pairs = new FlowVoxel[pairList.Count, 2];
+		int i = 0;
+		foreach (FlowVoxel[] pair in pairList) {
+			pairs[i, 0] = pair[0];
+			pairs[i++, 1] = pair[1];
+		}
+		if (isOpen)
+			Open();
 	}
 
 
 	public void Open() 
 	{ 
 		isOpen = true;
+		for (int i = 0; i < pairs.GetLength(0); i++) {
+			pairs[i, 0].AddNeighbor(pairs[i, 1], false);
+			pairs[i, 1].AddNeighbor(pairs[i, 0], false);
+		}
 	}
 
 	public void Close()
 	{
 		isOpen = false;
+		for (int i = 0; i < pairs.GetLength(0); i++) {
+			pairs[i, 0].RemoveNeighbor(pairs[i, 1], false);
+			pairs[i, 1].RemoveNeighbor(pairs[i, 0], false);
+		}
+	}
+
+
+	// Display the gizmo in the editor - this doesn't affect the actual game
+	void OnDrawGizmos() 
+	{
+		Gizmos.color = isOpen ? Color.cyan : Color.magenta;
+		if (boxCollider)
+			Gizmos.DrawWireCube(transform.position, Vector3.Scale(boxCollider.size, transform.lossyScale));
+		if (roomA)
+			Gizmos.DrawLine(this.transform.position, roomA.transform.position);
+		if (roomB)
+			Gizmos.DrawLine(this.transform.position, roomB.transform.position);
+		Gizmos.color = Color.blue;
+		if (roomA && roomB) 
+			for (int i = 0; i < pairs.GetLength(0); i++)
+				Gizmos.DrawLine(pairs[i, 0].Position, pairs[i, 1].Position);
 	}
 
 }

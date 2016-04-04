@@ -1,10 +1,14 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\RoomAtmosphere.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\FlowVoxelManager.cs">
     <Files>
-      <File FileName="Assets\Scripts\Room.cs" Line="41" Column="5" />
-      <File FileName="Assets\Scripts\RoomConnector.cs" Line="103" Column="15" />
-      <File FileName="Assets\Scripts\RoomAtmosphere.cs" Line="41" Column="23" />
+      <File FileName="Assets\Scripts\FlowVoxelManager.cs" Line="30" Column="27" />
+      <File FileName="Assets\Scripts\FlowVoxel.cs" Line="28" Column="3" />
+      <File FileName="Assets\Scripts\FlowVoxelConst.cs" Line="11" Column="26" />
+      <File FileName="Assets\Scripts\FlowRoom.cs" Line="14" Column="32" />
+      <File FileName="Assets\Scripts\Room.cs" Line="13" Column="19" NotebookId="1" />
+      <File FileName="Assets\Scripts\RoomConnector.cs" Line="27" Column="17" NotebookId="1" />
+      <File FileName="Assets\Scripts\RoomAtmosphere.cs" Line="41" Column="23" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
