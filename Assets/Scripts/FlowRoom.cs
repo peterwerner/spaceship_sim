@@ -14,6 +14,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	BoxCollider boxCollider;
 	List<GameObject> ownedObjects = new List<GameObject>();
 	FlowVoxel[ , , ] voxels = new FlowVoxel[0, 0, 0];
+	List<FlowVoxel> voxelsExtra = new List<FlowVoxel>();	// Additional voxels tied to this room, ie: constants tacked on by connectors
 
 	public float Atmosphere	{ get { return atmosphere; } }
 	public BoxCollider Collider { get { return boxCollider; } }
@@ -70,10 +71,11 @@ public class FlowRoom : ListComponent<FlowRoom> {
 
 	void FixedUpdate()
 	{
+		UpdateVoxels(Time.fixedDeltaTime);
 		// Update atmosphere
 		atmosphere = 0;
 		foreach (FlowVoxel voxel in voxels)
-			atmosphere += voxel.Atmosphere;
+			atmosphere += voxel.GetAtmosphere();
 		atmosphere /= voxels.Length;
 		// Apply gravity + atmospheric flow forces
 		foreach (GameObject obj in ownedObjects) {
@@ -83,15 +85,40 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	}
 
 
-	Vector3 GetForceAt(Vector3 pos) 
+	public void UpdateVoxels(float timeStep)
 	{
+		foreach (FlowVoxel voxel in voxels)
+			voxel.UpdateNextStep(timeStep);
+		foreach (FlowVoxel voxel in voxelsExtra)
+			voxel.UpdateNextStep(timeStep);
+		foreach (FlowVoxel voxel in voxels)
+			voxel.StepToNextStep(timeStep);
+		foreach (FlowVoxel voxel in voxelsExtra)
+			voxel.StepToNextStep(timeStep);
+	}
+
+
+	public Vector3 GetForceAt(Vector3 pos) 
+	{
+		bool success;
+		return GetForceAt(pos, out success);
+	}
+	public Vector3 GetForceAt(Vector3 pos, out bool success) 
+	{
+		if (!boxCollider.bounds.Contains(pos)) {
+			success = false;
+			return Vector3.zero;
+		}
 		float voxelSize = FlowVoxelManager.Radius * 2;
 		Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
 		Vector3 cornerHi = transform.position + 0.5f * colliderSize;
 		Vector3 indices = (colliderSize - (cornerHi - pos)) / voxelSize;
 		int i = (int)indices.x, j = (int)indices.y, k = (int)indices.z;
-		if (i < 0 || j < 0 || k < 0 || i >= voxels.GetLength(0) || j >= voxels.GetLength(1) || k >= voxels.GetLength(2))
+		if (i < 0 || j < 0 || k < 0 || i >= voxels.GetLength(0) || j >= voxels.GetLength(1) || k >= voxels.GetLength(2)) {
+			success = false;
 			return Vector3.zero;
+		}
+		success = true;
 		return voxels[i, j, k].Flow * voxels[i, j, k].Flow.magnitude * FlowVoxelManager.FlowForceConstant;
 	}
 
@@ -113,6 +140,9 @@ public class FlowRoom : ListComponent<FlowRoom> {
 			roomObjectRegistry.Remove(other.gameObject);
 		ownedObjects.Remove(other.gameObject);
 	}
+
+
+	public void AddExtraVoxel(FlowVoxel voxel) { voxelsExtra.Add(voxel); }
 
 
 	// Display the gizmo in the editor - this doesn't affect the actual game

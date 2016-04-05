@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class FlowVoxelManager : SingletonComponent<FlowVoxelManager> {
 
 	[SerializeField] [Range(0, 1)] float ambientAtmosphere = 0;
-	[SerializeField] [Range(0.1f, 4)] float voxelWidth = 1;
+	[SerializeField] [Range(0.5f, 4)] float voxelWidth = 1;
 	[SerializeField] [Tooltip("linearly scales the flow vector")] 
 	float flowVectorConstant = 1000;
 	[SerializeField] [Tooltip("linearly scales the flow force")] 
@@ -35,10 +35,6 @@ public class FlowVoxelManager : SingletonComponent<FlowVoxelManager> {
 	void FixedUpdate () 
 	{
 		radius = voxelWidth / 2;
-		foreach (FlowVoxel voxel in flowVoxels)
-			voxel.UpdateNextStep(Time.fixedDeltaTime);
-		foreach (FlowVoxel voxel in flowVoxels)
-			voxel.StepToNextStep(Time.fixedDeltaTime);
 	}
 
 
