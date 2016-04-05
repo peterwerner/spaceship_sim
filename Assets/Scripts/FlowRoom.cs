@@ -31,6 +31,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		Vector3 cornerHi = transform.position + 0.5f * colliderSize;
 		Vector3 numVoxels = (cornerHi - cornerLo) / voxelSize;
 		voxels = new FlowVoxel[(int)numVoxels.x, (int)numVoxels.y, (int)numVoxels.z];
+		Vector3 offsetStart = (colliderSize - (new Vector3(voxels.GetLength(0), voxels.GetLength(1), voxels.GetLength(2)) - Vector3.one) * voxelSize) / 2;
 		/*
 		int[ , ] offsets = {
 			{0,0,-1},	{0,-1,0},	{-1, 0, 0}, 
@@ -41,9 +42,9 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		*/
 		float x, y, z;
 		int i, j, k;
-		for (i = 0, x = cornerLo.x + voxelSize / 2;   i < voxels.GetLength(0);   i++, x += voxelSize) {
-			for (j = 0, y = cornerLo.y + voxelSize / 2;   j < voxels.GetLength(1);   j++, y += voxelSize) {
-				for (k = 0, z = cornerLo.z + voxelSize / 2;   k < voxels.GetLength(2);   k++, z += voxelSize) 
+		for (i = 0, x = cornerLo.x + offsetStart.x;   i < voxels.GetLength(0);   i++, x += voxelSize) {
+			for (j = 0, y = cornerLo.y + offsetStart.y;   j < voxels.GetLength(1);   j++, y += voxelSize) {
+				for (k = 0, z = cornerLo.z + offsetStart.z;   k < voxels.GetLength(2);   k++, z += voxelSize) 
 				{
 					voxels[i, j, k] = new FlowVoxel(new Vector3(x,y,z), atmosphereStart);
 					
@@ -117,8 +118,6 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	// Display the gizmo in the editor - this doesn't affect the actual game
 	void OnDrawGizmos()
 	{
-		foreach (FlowVoxel voxel in voxels)
-			voxel.DrawGizmo(this.transform.position);
 		Gizmos.color = new Color(1, Mathf.Min(1, atmosphere), Mathf.Min(1, atmosphere));
 		if (boxCollider)
 			Gizmos.DrawWireCube(transform.position, Vector3.Scale(boxCollider.size, transform.lossyScale));

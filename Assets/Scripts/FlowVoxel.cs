@@ -80,7 +80,7 @@ public class FlowVoxel {
 
 
 	// Display the gizmo in the editor - this doesn't affect the actual game
-	public void DrawGizmo(Vector3 roomPos) 
+	public void DrawGizmo() 
 	{
 		Gizmos.color = new Color(1, Mathf.Min(1, atmosphere), Mathf.Min(1, atmosphere));
 		//Gizmos.DrawWireCube(position, FlowVoxelManager.Radius * 2 * Vector3.one);

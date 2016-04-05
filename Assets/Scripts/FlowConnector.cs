@@ -50,7 +50,7 @@ public class FlowConnector : MonoBehaviour {
 		List<FlowVoxel[]> pairList = new List<FlowVoxel[]>();
 		if (!roomB) {
 			foreach (FlowVoxel voxel in roomA.FlowVoxels)
-				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) <= FlowVoxelManager.Radius)
+				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) < FlowVoxelManager.Radius * 2)
 					pairList.Add(new FlowVoxel[] { voxel, new FlowVoxelConst(boxCollider.ClosestPointOnBounds(voxel.Position), FlowVoxelManager.AmbientAtmosphere) });
 		}
 		// If roomB is NOT null, look at all voxels in A and B that are within one voxel-radius of the connector bounds
@@ -58,18 +58,22 @@ public class FlowConnector : MonoBehaviour {
 		else {
 			List<FlowVoxel> candidatesB = new List<FlowVoxel>();
 			foreach (FlowVoxel voxelB in roomB.FlowVoxels)
-				if (Vector3.Distance(voxelB.Position, boxCollider.ClosestPointOnBounds(voxelB.Position)) <= FlowVoxelManager.Radius)
+				if (Vector3.Distance(voxelB.Position, boxCollider.ClosestPointOnBounds(voxelB.Position)) < FlowVoxelManager.Radius * 2)
 					candidatesB.Add(voxelB);
+			
+			float distanceClosest = Mathf.Infinity;
+			foreach (FlowVoxel voxelA in roomA.FlowVoxels)
+				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowVoxelManager.Radius * 2)
+					foreach (FlowVoxel voxelB in candidatesB)
+						if (Vector3.Distance(voxelA.Position, voxelB.Position) < distanceClosest)
+							distanceClosest = Vector3.Distance(voxelA.Position, voxelB.Position);
+			
 			foreach (FlowVoxel voxelA in roomA.FlowVoxels) {
-				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) <= FlowVoxelManager.Radius) {
+				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowVoxelManager.Radius * 2) {
 					FlowVoxel closestInB = null;
-					float distanceBest = FlowVoxelManager.Radius * 4;
-					foreach (FlowVoxel voxelB in candidatesB) {
-						if (Vector3.Distance(voxelA.Position, voxelB.Position) <= distanceBest) {
+					foreach (FlowVoxel voxelB in candidatesB)
+						if (Vector3.Distance(voxelA.Position, voxelB.Position) <= distanceClosest + 0.001f)
 							closestInB = voxelB;
-							distanceBest = Vector3.Distance(voxelA.Position, voxelB.Position);
-						}
-					}
 					if (closestInB != null)
 						pairList.Add(new FlowVoxel[] { voxelA, closestInB });
 				}
@@ -113,7 +117,7 @@ public class FlowConnector : MonoBehaviour {
 		if (boxCollider)
 			Gizmos.DrawWireCube(transform.position, Vector3.Scale(boxCollider.size, transform.lossyScale));
 		Gizmos.color = Color.blue;
-		if (roomA && roomB) 
+		if (pairs != null) 
 			for (int i = 0; i < pairs.GetLength(0); i++)
 				Gizmos.DrawLine(pairs[i, 0].Position, pairs[i, 1].Position);
 	}

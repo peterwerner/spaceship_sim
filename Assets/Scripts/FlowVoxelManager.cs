@@ -35,10 +35,17 @@ public class FlowVoxelManager : SingletonComponent<FlowVoxelManager> {
 	void FixedUpdate () 
 	{
 		radius = voxelWidth / 2;
-		foreach (FlowVoxel voxel in FlowVoxels)
+		foreach (FlowVoxel voxel in flowVoxels)
 			voxel.UpdateNextStep(Time.fixedDeltaTime);
-		foreach (FlowVoxel voxel in FlowVoxels)
+		foreach (FlowVoxel voxel in flowVoxels)
 			voxel.StepToNextStep(Time.fixedDeltaTime);
+	}
+
+
+	void OnDrawGizmos ()
+	{
+		foreach (FlowVoxel voxel in flowVoxels)
+			voxel.DrawGizmo();
 	}
 
 }
