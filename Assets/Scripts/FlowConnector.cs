@@ -13,7 +13,7 @@ public class FlowConnector : MonoBehaviour {
 
 
 	bool started = false;
-	void FixedUpdate()
+	void Update()
 	{
 		if (!started) {
 			started = true;
@@ -49,9 +49,13 @@ public class FlowConnector : MonoBehaviour {
 		// If roomB is null, each pair has one voxel from roomA and the ambient atmosphere voxel
 		List<FlowVoxel[]> pairList = new List<FlowVoxel[]>();
 		if (!roomB) {
-			foreach (FlowVoxel voxel in roomA.FlowVoxels)
-				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) < FlowVoxelManager.Radius * 2)
-					pairList.Add(new FlowVoxel[] { voxel, new FlowVoxelConst(boxCollider.ClosestPointOnBounds(voxel.Position), FlowVoxelManager.AmbientAtmosphere) });
+			foreach (FlowVoxel voxel in roomA.FlowVoxels) {
+				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) < FlowVoxelManager.Radius * 2) {
+					FlowVoxelConst ambientVoxel = new FlowVoxelConst(boxCollider.ClosestPointOnBounds(voxel.Position));
+					roomA.AddExtraVoxel(ambientVoxel);
+					pairList.Add(new FlowVoxel[] { voxel, ambientVoxel });
+				}
+			}
 		}
 		// If roomB is NOT null, look at all voxels in A and B that are within one voxel-radius of the connector bounds
 		// For each of the A voxels, pair it with the closest B voxel (if no B voxel within one voxel-width, abandon the A voxel)

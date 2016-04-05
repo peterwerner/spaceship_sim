@@ -4,11 +4,10 @@ using System.Collections.Generic;
 
 public class FlowVoxel {
 
-	protected float atmosphere, atmosphereNext;
+	float atmosphere, atmosphereNext;
 	protected Vector3 flow, position;
 	protected List<FlowVoxel> neighbors = new List<FlowVoxel>();
 
-	public float Atmosphere	{ get { return atmosphere; } }
 	public Vector3 Flow	{ get { return flow; } }
 	public Vector3 Position	{ get { return position; } }
 
@@ -39,9 +38,9 @@ public class FlowVoxel {
 		foreach (FlowVoxel neighbor in neighbors) 
 		{
 			float weight = weightBaseline + neighbor.flow.magnitude;
-			weightedNetAtmo += weight * neighbor.atmosphere;
+			weightedNetAtmo += weight * neighbor.GetAtmosphere();
 			sumWeights += weight;
-			float diff = neighbor.atmosphere - atmosphere;	// positive diff = inflow
+			float diff = neighbor.GetAtmosphere() - atmosphere;	// positive diff = inflow
 			weightedNetFlow += weight * diff * (position - neighbor.position);
 		}
 		flow = FlowVoxelManager.FlowVectorConstant * timeStep * weightedNetFlow / sumWeights;
@@ -79,10 +78,13 @@ public class FlowVoxel {
 	}
 
 
+	public virtual float GetAtmosphere() { return atmosphere; }
+
+
 	// Display the gizmo in the editor - this doesn't affect the actual game
 	public void DrawGizmo() 
 	{
-		Gizmos.color = new Color(1, Mathf.Min(1, atmosphere), Mathf.Min(1, atmosphere));
+		Gizmos.color = new Color(1, Mathf.Min(1, this.GetAtmosphere()), Mathf.Min(1, this.GetAtmosphere()));
 		//Gizmos.DrawWireCube(position, FlowVoxelManager.Radius * 2 * Vector3.one);
 		Gizmos.DrawWireCube(position, FlowVoxelManager.Radius * 0.2f * Vector3.one);
 		Gizmos.DrawLine(position, position + flow);
