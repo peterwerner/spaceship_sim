@@ -27,6 +27,7 @@ public class FlowVoxel {
 	}
 
 
+	/// <summary>Calculates this' Atmosphere value for the next time step, but does not store it in Atmosphere.</summary>
 	public void UpdateNextStep(float timeStep)
 	{
 		float weightBaseline = 0.0001f;
@@ -50,12 +51,14 @@ public class FlowVoxel {
 		float m = Mathf.Min(1, FlowSimManager.FlowRateConstant * timeStep);
 		atmosphereNext = (1-m) * atmosphere + m * targetAtmo;
 	}
+	/// <summary>Stores the last value calculated by UpdateNextStep in Atmosphere.</summary>
 	public virtual void StepToNextStep(float timeStep)
 	{
 		atmosphere = atmosphereNext;
 	}
 
 
+	/// <summary>Neighbor voxels are used to calculate atmosphere flow</summary>
 	public virtual bool AddNeighbor(FlowVoxel neighbor, bool reciprocate)
 	{
 		if (neighbor == null || neighbor == this || neighbors.Contains(neighbor))
@@ -65,7 +68,7 @@ public class FlowVoxel {
 			return neighbor.AddNeighbor(this, false);
 		return true;
 	}
-
+	/// <summary>Neighbor voxels are used to calculate atmosphere flow</summary>
 	public virtual bool RemoveNeighbor(FlowVoxel neighbor, bool reciprocate)
 	{
 		if (!neighbors.Remove(neighbor))

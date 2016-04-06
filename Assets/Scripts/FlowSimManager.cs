@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>Singleton object used to give in-editor control over various constants.</summary>
 public class FlowSimManager : SingletonComponent<FlowSimManager> {
 
 	[SerializeField] [Range(0, 1)] float ambientAtmosphere = 0;

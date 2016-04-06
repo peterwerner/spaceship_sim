@@ -16,7 +16,7 @@ public class FlowVoxelConst : FlowVoxel {
 		constantAtmo = atmosphere;
 	}
 
-	// If no constant atmosphere value is provided, use the ambient atmosphere
+	/// <summary>Assumes the ambient atmosphere value set in the FlowSimManager.</summary>
 	public FlowVoxelConst(Vector3 position) : base(position, FlowSimManager.AmbientAtmosphere) 
 	{
 		useAmbientAtmo = true;

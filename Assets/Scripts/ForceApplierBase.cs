@@ -8,6 +8,7 @@ public abstract class ForceApplierBase : MonoBehaviour {
 	public abstract void ApplyTo(GameObject obj);
 
 
+	/// <summary>Applies a force equal to obj's mass * accelVector</summary>
 	public static bool ApplyAcceleration(GameObject obj, Vector3 accelVector)
 	{
 		if (obj == null)

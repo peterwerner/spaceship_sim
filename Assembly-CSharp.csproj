@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\FlowConnector.cs" />
+     <Compile Include="Assets\Scripts\FlowParticleSystem.cs" />
      <Compile Include="Assets\Scripts\FlowRoom.cs" />
      <Compile Include="Assets\Scripts\FlowRoomCollection.cs" />
      <Compile Include="Assets\Scripts\FlowSimManager.cs" />

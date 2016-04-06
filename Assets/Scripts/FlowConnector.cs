@@ -14,6 +14,7 @@ public class FlowConnector : MonoBehaviour {
 
 
 	bool started = false;
+	public bool Initialized { get { return started; } }
 	void Update()
 	{
 		if (!started) {
@@ -150,7 +151,7 @@ public class FlowConnector : MonoBehaviour {
 	}
 
 
-	// Used by cheap simulation
+	/// <summary>Should only be used for cheap simulation.</summary>
 	public float GetCheapOutflowRate(FlowRoom room)
 	{
 		if (isOpen && room == roomA)
