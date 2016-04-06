@@ -7,9 +7,10 @@ public class FlowConnector : MonoBehaviour {
 
 	public bool isOpen = false;
 	bool wasOpen = false;
+	float flowCheap = 0;
 	FlowRoom roomA = null, roomB = null;
 	BoxCollider boxCollider;
-	FlowVoxel[ , ] pairs;
+	FlowVoxel[ , ] pairs;	// Pairs of: roomA voxel, roomB voxel
 
 
 	bool started = false;
@@ -50,7 +51,7 @@ public class FlowConnector : MonoBehaviour {
 		List<FlowVoxel[]> pairList = new List<FlowVoxel[]>();
 		if (!roomB) {
 			foreach (FlowVoxel voxel in roomA.FlowVoxels) {
-				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) < FlowVoxelManager.Radius * 2) {
+				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) < FlowSimManager.Radius * 2) {
 					FlowVoxelConst ambientVoxel = new FlowVoxelConst(boxCollider.ClosestPointOnBounds(voxel.Position));
 					roomA.AddExtraVoxel(ambientVoxel);
 					pairList.Add(new FlowVoxel[] { voxel, ambientVoxel });
@@ -62,18 +63,18 @@ public class FlowConnector : MonoBehaviour {
 		else {
 			List<FlowVoxel> candidatesB = new List<FlowVoxel>();
 			foreach (FlowVoxel voxelB in roomB.FlowVoxels)
-				if (Vector3.Distance(voxelB.Position, boxCollider.ClosestPointOnBounds(voxelB.Position)) < FlowVoxelManager.Radius * 2)
+				if (Vector3.Distance(voxelB.Position, boxCollider.ClosestPointOnBounds(voxelB.Position)) < FlowSimManager.Radius * 2)
 					candidatesB.Add(voxelB);
 			
 			float distanceClosest = Mathf.Infinity;
 			foreach (FlowVoxel voxelA in roomA.FlowVoxels)
-				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowVoxelManager.Radius * 2)
+				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowSimManager.Radius * 2)
 					foreach (FlowVoxel voxelB in candidatesB)
 						if (Vector3.Distance(voxelA.Position, voxelB.Position) < distanceClosest)
 							distanceClosest = Vector3.Distance(voxelA.Position, voxelB.Position);
 			
 			foreach (FlowVoxel voxelA in roomA.FlowVoxels) {
-				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowVoxelManager.Radius * 2) {
+				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowSimManager.Radius * 2) {
 					FlowVoxel closestInB = null;
 					foreach (FlowVoxel voxelB in candidatesB)
 						if (Vector3.Distance(voxelA.Position, voxelB.Position) <= distanceClosest + 0.001f)
@@ -92,6 +93,41 @@ public class FlowConnector : MonoBehaviour {
 		}
 		if (isOpen)
 			Open();
+		// Notify the room(s)
+		if (roomA)
+			roomA.AddConnector(this);
+		if (roomB)
+			roomB.AddConnector(this);
+	}
+
+
+	void FixedUpdate()
+	{
+		if (isOpen && pairs != null) {
+			float atmoDiff = 0;
+			if (roomA) {
+				if (roomB)
+					atmoDiff = roomA.Atmosphere - roomB.Atmosphere;
+				else
+					atmoDiff = roomA.Atmosphere - FlowSimManager.AmbientAtmosphere;
+			}
+			flowCheap = atmoDiff * FlowSimManager.Radius * 2 * pairs.Length;	// atmoDiff * approximate area
+
+			if (roomA && roomA.SimulationType == FlowRoom.SimType.CHEAP) {
+				for (int i = 0; i < pairs.GetLength(0); i++) {
+					pairs[i, 0].SetAtmosphere(roomA.Atmosphere);
+					pairs[i, 0].Flow = roomA.GetCheapFlow();
+				}
+			}
+			if (roomB && roomB.SimulationType == FlowRoom.SimType.CHEAP) {
+				for (int i = 0; i < pairs.GetLength(0); i++) {
+					pairs[i, 1].SetAtmosphere(roomB.Atmosphere);
+					pairs[i, 1].Flow = roomB.GetCheapFlow();
+				}
+			}
+		}
+		else
+			flowCheap = 0;
 	}
 
 
@@ -111,6 +147,17 @@ public class FlowConnector : MonoBehaviour {
 			pairs[i, 0].RemoveNeighbor(pairs[i, 1], false);
 			pairs[i, 1].RemoveNeighbor(pairs[i, 0], false);
 		}
+	}
+
+
+	// Used by cheap simulation
+	public float GetCheapOutflowRate(FlowRoom room)
+	{
+		if (isOpen && room == roomA)
+			return flowCheap;
+		if (isOpen && room == roomB)
+			return -1 * flowCheap;
+		return 0;
 	}
 
 

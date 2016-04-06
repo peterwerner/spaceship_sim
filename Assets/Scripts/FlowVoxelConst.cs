@@ -9,7 +9,6 @@ public class FlowVoxelConst : FlowVoxel {
 
 	float constantAtmo = 0;
 	bool useAmbientAtmo = false;
-	public override float GetAtmosphere() { return useAmbientAtmo ? FlowVoxelManager.AmbientAtmosphere : constantAtmo; }
 
 
 	public FlowVoxelConst(Vector3 position, float atmosphere) : base(position, atmosphere) 
@@ -18,7 +17,7 @@ public class FlowVoxelConst : FlowVoxel {
 	}
 
 	// If no constant atmosphere value is provided, use the ambient atmosphere
-	public FlowVoxelConst(Vector3 position) : base(position, FlowVoxelManager.AmbientAtmosphere) 
+	public FlowVoxelConst(Vector3 position) : base(position, FlowSimManager.AmbientAtmosphere) 
 	{
 		useAmbientAtmo = true;
 	}
@@ -26,5 +25,9 @@ public class FlowVoxelConst : FlowVoxel {
 
 	public override void StepToNextStep(float timeStep) { /* Do nothing - never update atmosphere value */ }
 
+
+	public override float GetAtmosphere() { return useAmbientAtmo ? FlowSimManager.AmbientAtmosphere : constantAtmo; }
+
+	public override void SetAtmosphere(float value) { /* Do nothing */ }
 
 }

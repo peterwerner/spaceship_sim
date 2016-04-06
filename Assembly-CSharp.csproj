@@ -48,9 +48,9 @@
      <Compile Include="Assets\Scripts\FlowConnector.cs" />
      <Compile Include="Assets\Scripts\FlowRoom.cs" />
      <Compile Include="Assets\Scripts\FlowRoomCollection.cs" />
+     <Compile Include="Assets\Scripts\FlowSimManager.cs" />
      <Compile Include="Assets\Scripts\FlowVoxel.cs" />
      <Compile Include="Assets\Scripts\FlowVoxelConst.cs" />
-     <Compile Include="Assets\Scripts\FlowVoxelManager.cs" />
      <Compile Include="Assets\Scripts\ForceApplierBase.cs" />
      <Compile Include="Assets\Scripts\ForceApplierDirectional.cs" />
      <Compile Include="Assets\Scripts\ListComponent.cs" />

@@ -8,7 +8,7 @@ public class FlowVoxel {
 	protected Vector3 flow, position;
 	protected List<FlowVoxel> neighbors = new List<FlowVoxel>();
 
-	public Vector3 Flow	{ get { return flow; } }
+	public Vector3 Flow	{ get { return flow; } set { flow = value; } }
 	public Vector3 Position	{ get { return position; } }
 
 
@@ -18,14 +18,12 @@ public class FlowVoxel {
 		this.atmosphereNext = atmosphere;
 		this.flow = Vector3.zero;
 		this.position = position;
-		FlowVoxelManager.FlowVoxels.Add(this);
 	}
 
 	~FlowVoxel()
 	{
 		foreach (FlowVoxel neighbor in neighbors) 
 			neighbor.RemoveNeighbor(this, false);
-		FlowVoxelManager.FlowVoxels.Remove(this);
 	}
 
 
@@ -43,13 +41,13 @@ public class FlowVoxel {
 			float diff = neighbor.GetAtmosphere() - atmosphere;	// positive diff = inflow
 			weightedNetFlow += weight * diff * (position - neighbor.position);
 		}
-		flow = FlowVoxelManager.FlowVectorConstant * timeStep * weightedNetFlow / sumWeights;
+		flow = FlowSimManager.FlowVectorConstant * timeStep * weightedNetFlow / sumWeights;
 		float targetAtmo = weightedNetAtmo / sumWeights;
 		if (float.IsNaN(flow.x)) {		// Edge case: no neighbors results in NaN's
 			flow = Vector3.zero;		//			  default to 0 vector
 			targetAtmo = atmosphere;	//			  default to self
 		}
-		float m = Mathf.Min(1, FlowVoxelManager.FlowRateConstant * timeStep);
+		float m = Mathf.Min(1, FlowSimManager.FlowRateConstant * timeStep);
 		atmosphereNext = (1-m) * atmosphere + m * targetAtmo;
 	}
 	public virtual void StepToNextStep(float timeStep)
@@ -80,13 +78,15 @@ public class FlowVoxel {
 
 	public virtual float GetAtmosphere() { return atmosphere; }
 
+	public virtual void SetAtmosphere(float value) { atmosphere = value; }
+
 
 	// Display the gizmo in the editor - this doesn't affect the actual game
 	public void DrawGizmo() 
 	{
 		Gizmos.color = new Color(1, Mathf.Min(1, this.GetAtmosphere()), Mathf.Min(1, this.GetAtmosphere()));
 		//Gizmos.DrawWireCube(position, FlowVoxelManager.Radius * 2 * Vector3.one);
-		Gizmos.DrawWireCube(position, FlowVoxelManager.Radius * 0.2f * Vector3.one);
+		Gizmos.DrawWireCube(position, FlowSimManager.Radius * 0.2f * Vector3.one);
 		Gizmos.DrawLine(position, position + flow);
 	}
 

@@ -5,15 +5,22 @@ using System.Collections.Generic;
 [RequireComponent (typeof(BoxCollider))]
 public class FlowRoom : ListComponent<FlowRoom> {
 
+	// Full simulation: uses voxels to create a 3d vector field of air flow
+	// Cheap simulation: estimates a single flow vector for the room, based on connected rooms
+	public enum SimType { FULL, CHEAP };
+
 	// Static registry of objects -> rooms, where each object is currently owned by that room
 	static Dictionary<GameObject, FlowRoom> roomObjectRegistry = new Dictionary<GameObject, FlowRoom>();
 
 	[SerializeField] [Tooltip("0 is vacuum, 1 is 1 atm")] [Range(0, 1)] float atmosphereStart = 1;
 	[SerializeField] ForceApplierBase gravity;
 	float atmosphere;
+	Vector3 flowForceCheap = Vector3.zero;
+	SimType simType = SimType.FULL;
 	BoxCollider boxCollider;
-	List<GameObject> ownedObjects = new List<GameObject>();
-	FlowVoxel[ , , ] voxels = new FlowVoxel[0, 0, 0];
+	List<GameObject> ownedObjects = new List<GameObject>();	// Objects that are currently within the trigger volume
+	List<FlowConnector> connectors = new List<FlowConnector>();
+	FlowVoxel[ , , ] voxels = new FlowVoxel[0, 0, 0];		// Discretization of the volume of the room; these voxels are used to determine forces
 	List<FlowVoxel> voxelsExtra = new List<FlowVoxel>();	// Additional voxels tied to this room, ie: constants tacked on by connectors
 
 	public float Atmosphere	{ get { return atmosphere; } }
@@ -26,7 +33,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
 		atmosphere = atmosphereStart;
 		// Construct voxels - fill the collider's bounds
-		float voxelSize = FlowVoxelManager.Radius * 2;
+		float voxelSize = FlowSimManager.Radius * 2;
 		Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
 		Vector3 cornerLo = transform.position - 0.5f * colliderSize;
 		Vector3 cornerHi = transform.position + 0.5f * colliderSize;
@@ -71,12 +78,12 @@ public class FlowRoom : ListComponent<FlowRoom> {
 
 	void FixedUpdate()
 	{
-		UpdateVoxels(Time.fixedDeltaTime);
-		// Update atmosphere
-		atmosphere = 0;
-		foreach (FlowVoxel voxel in voxels)
-			atmosphere += voxel.GetAtmosphere();
-		atmosphere /= voxels.Length;
+		if (simType == SimType.FULL) 
+			UpdateVoxels(Time.fixedDeltaTime);
+
+		else if (simType == SimType.CHEAP) 
+			UpdateCheap(Time.fixedDeltaTime);
+
 		// Apply gravity + atmospheric flow forces
 		foreach (GameObject obj in ownedObjects) {
 			gravity.ApplyTo(obj);
@@ -85,8 +92,14 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	}
 
 
-	public void UpdateVoxels(float timeStep)
+	// Used in full simulation
+	void UpdateVoxels(float timeStep)
 	{
+		atmosphere = 0;
+		foreach (FlowVoxel voxel in voxels)
+			atmosphere += voxel.GetAtmosphere();
+		atmosphere /= voxels.Length;
+		
 		foreach (FlowVoxel voxel in voxels)
 			voxel.UpdateNextStep(timeStep);
 		foreach (FlowVoxel voxel in voxelsExtra)
@@ -95,6 +108,22 @@ public class FlowRoom : ListComponent<FlowRoom> {
 			voxel.StepToNextStep(timeStep);
 		foreach (FlowVoxel voxel in voxelsExtra)
 			voxel.StepToNextStep(timeStep);
+	}
+
+	// Used in cheap simulation
+	void UpdateCheap(float timeStep)
+	{
+		float netOutflow = 0;
+		foreach (FlowConnector connector in connectors)
+			netOutflow += connector.GetCheapOutflowRate(this);
+		float volume = Mathf.Pow(2 * FlowSimManager.Radius, 2) * voxels.Length;
+		atmosphere -= FlowSimManager.CheapAtmoDeltaConstant * netOutflow * Time.fixedDeltaTime / volume;
+
+		flowForceCheap = Vector3.zero;
+		foreach (FlowConnector connector in connectors) {
+			float magnitude = connector.GetCheapOutflowRate(this) * FlowSimManager.CheapFlowForceConstant;
+			flowForceCheap += magnitude * (connector.transform.position - this.transform.position);
+		}
 	}
 
 
@@ -103,23 +132,37 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		bool success;
 		return GetForceAt(pos, out success);
 	}
+
 	public Vector3 GetForceAt(Vector3 pos, out bool success) 
 	{
 		if (!boxCollider.bounds.Contains(pos)) {
 			success = false;
 			return Vector3.zero;
 		}
-		float voxelSize = FlowVoxelManager.Radius * 2;
-		Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
-		Vector3 cornerHi = transform.position + 0.5f * colliderSize;
-		Vector3 indices = (colliderSize - (cornerHi - pos)) / voxelSize;
-		int i = (int)indices.x, j = (int)indices.y, k = (int)indices.z;
-		if (i < 0 || j < 0 || k < 0 || i >= voxels.GetLength(0) || j >= voxels.GetLength(1) || k >= voxels.GetLength(2)) {
-			success = false;
-			return Vector3.zero;
+
+		if (simType == SimType.FULL) 
+		{
+			float voxelSize = FlowSimManager.Radius * 2;
+			Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
+			Vector3 cornerHi = transform.position + 0.5f * colliderSize;
+			Vector3 indices = (colliderSize - (cornerHi - pos)) / voxelSize;
+			int i = (int)indices.x, j = (int)indices.y, k = (int)indices.z;
+			if (i < 0 || j < 0 || k < 0 || i >= voxels.GetLength(0) || j >= voxels.GetLength(1) || k >= voxels.GetLength(2)) {
+				success = false;
+				return Vector3.zero;
+			}
+			success = true;
+			return voxels[i, j, k].Flow * voxels[i, j, k].Flow.magnitude * FlowSimManager.FlowForceConstant;
 		}
-		success = true;
-		return voxels[i, j, k].Flow * voxels[i, j, k].Flow.magnitude * FlowVoxelManager.FlowForceConstant;
+
+		else if (simType == SimType.CHEAP)
+		{
+			success = true;
+			return flowForceCheap;
+		}
+
+		success = false;
+		return Vector3.zero;
 	}
 
 
@@ -142,7 +185,33 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	}
 
 
+	// Switch between full and cheap simulation types
+	public SimType SimulationType {
+		get 
+		{
+			return simType;
+		}
+		set 
+		{
+			if (simType == value)
+				return;
+			simType = value;
+			if (simType == SimType.FULL) {
+				foreach (FlowVoxel voxel in voxels)
+					voxel.SetAtmosphere(atmosphere);
+				foreach (FlowVoxel voxel in voxelsExtra)
+					voxel.SetAtmosphere(atmosphere);
+			}
+		}
+	}
+
+
 	public void AddExtraVoxel(FlowVoxel voxel) { voxelsExtra.Add(voxel); }
+
+	public void AddConnector(FlowConnector connector) { connectors.Add(connector); }
+
+
+	public Vector3 GetCheapFlow() { return flowForceCheap; }
 
 
 	// Display the gizmo in the editor - this doesn't affect the actual game
@@ -154,6 +223,12 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		Gizmos.color = Color.yellow;
 		foreach (GameObject obj in ownedObjects)
 			Gizmos.DrawWireCube(obj.transform.position, obj.transform.lossyScale);
+		//if (simType == SimType.FULL) {
+			foreach (FlowVoxel voxel in voxels)
+				voxel.DrawGizmo();
+			foreach (FlowVoxel voxel in voxelsExtra)
+				voxel.DrawGizmo();
+		//}
 	}
 
 }
