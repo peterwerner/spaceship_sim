@@ -31,16 +31,18 @@ public class FlowRoomCollection : MonoBehaviour {
 
 
 	/// <summary>Returns the force vector at a given point in the room collection.</summary>
-	public Vector3 GetForceAt(Vector3 pos) 
+	/// /// <param name="success">True IFF the point belonged to one of the rooms.</param>
+	public Vector3 GetForceAt(Vector3 pos, out bool success) 
 	{
-		return GetForceAt(pos, false);
+		return GetForceAt(pos, false, out success);
 	}
 	/// <summary>Returns the force vector at a given point in the room collection.</summary>
 	/// <param name="onlyFullSimRooms">Should rooms running cheap simulations be ignored?</param>
-	public Vector3 GetForceAt(Vector3 pos, bool onlyFullSimRooms) 
+	/// /// <param name="success">True IFF the point belonged to one of the rooms.</param>
+	public Vector3 GetForceAt(Vector3 pos, bool onlyFullSimRooms, out bool success) 
 	{
 		Vector3 force;
-		bool success;
+		success = false;
 		foreach (FlowRoom room in rooms) {
 			if (onlyFullSimRooms && room.SimulationType == FlowRoom.SimType.FULL) {
 				force = room.GetForceAt(pos, out success);
