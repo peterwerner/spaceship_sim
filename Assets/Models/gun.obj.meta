@@ -1,0 +1,148 @@
+fileFormatVersion: 2
+guid: a11f56e463093674faad6dfb3b94930a
+timeCreated: 1460058766
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: gun_gun_master_curve_pCylinder1
+    100004: gun_gun_master_curve_pCylinder2
+    100006: gun_gun_master_curve_pCylinder3
+    100008: gun_gun_master_curve_pCylinder4
+    100010: gun_gun_master_curve_pCylinder5
+    100012: gun_gun_master_curve_pCylinder6
+    100014: gun_gun_master_curve_polySurface2
+    100016: gun_gun_master_curve_polySurface3
+    100018: gun_gun_master_curve_polySurface4
+    100020: gun_gun_master_curve_polySurface5
+    100022: gun_gun_master_curve_pPlane1
+    100024: gun_gun_master_curve_pPlane2
+    100026: gun_gun_master_curve_pPlane3
+    100028: gun_gun_master_curve_pPlane4
+    100030: polySurface1_gun_gun_master_curve
+    400000: //RootNode
+    400002: gun_gun_master_curve_pCylinder1
+    400004: gun_gun_master_curve_pCylinder2
+    400006: gun_gun_master_curve_pCylinder3
+    400008: gun_gun_master_curve_pCylinder4
+    400010: gun_gun_master_curve_pCylinder5
+    400012: gun_gun_master_curve_pCylinder6
+    400014: gun_gun_master_curve_polySurface2
+    400016: gun_gun_master_curve_polySurface3
+    400018: gun_gun_master_curve_polySurface4
+    400020: gun_gun_master_curve_polySurface5
+    400022: gun_gun_master_curve_pPlane1
+    400024: gun_gun_master_curve_pPlane2
+    400026: gun_gun_master_curve_pPlane3
+    400028: gun_gun_master_curve_pPlane4
+    400030: polySurface1_gun_gun_master_curve
+    2300000: gun_gun_master_curve_pCylinder1
+    2300002: gun_gun_master_curve_pCylinder2
+    2300004: gun_gun_master_curve_pCylinder3
+    2300006: gun_gun_master_curve_pCylinder4
+    2300008: gun_gun_master_curve_pCylinder5
+    2300010: gun_gun_master_curve_pCylinder6
+    2300012: gun_gun_master_curve_polySurface2
+    2300014: gun_gun_master_curve_polySurface3
+    2300016: gun_gun_master_curve_polySurface4
+    2300018: gun_gun_master_curve_polySurface5
+    2300020: gun_gun_master_curve_pPlane1
+    2300022: gun_gun_master_curve_pPlane2
+    2300024: gun_gun_master_curve_pPlane3
+    2300026: gun_gun_master_curve_pPlane4
+    2300028: polySurface1_gun_gun_master_curve
+    3300000: gun_gun_master_curve_pCylinder1
+    3300002: gun_gun_master_curve_pCylinder2
+    3300004: gun_gun_master_curve_pCylinder3
+    3300006: gun_gun_master_curve_pCylinder4
+    3300008: gun_gun_master_curve_pCylinder5
+    3300010: gun_gun_master_curve_pCylinder6
+    3300012: gun_gun_master_curve_polySurface2
+    3300014: gun_gun_master_curve_polySurface3
+    3300016: gun_gun_master_curve_polySurface4
+    3300018: gun_gun_master_curve_polySurface5
+    3300020: gun_gun_master_curve_pPlane1
+    3300022: gun_gun_master_curve_pPlane2
+    3300024: gun_gun_master_curve_pPlane3
+    3300026: gun_gun_master_curve_pPlane4
+    3300028: polySurface1_gun_gun_master_curve
+    4300000: gun_gun_master_curve_pCylinder1
+    4300002: gun_gun_master_curve_pCylinder2
+    4300004: gun_gun_master_curve_pCylinder3
+    4300006: gun_gun_master_curve_pCylinder4
+    4300008: gun_gun_master_curve_pCylinder5
+    4300010: gun_gun_master_curve_pCylinder6
+    4300012: gun_gun_master_curve_polySurface2
+    4300014: gun_gun_master_curve_polySurface3
+    4300016: gun_gun_master_curve_polySurface4
+    4300018: gun_gun_master_curve_polySurface5
+    4300020: gun_gun_master_curve_pPlane1
+    4300022: gun_gun_master_curve_pPlane2
+    4300024: gun_gun_master_curve_pPlane3
+    4300026: gun_gun_master_curve_pPlane4
+    4300028: polySurface1_gun_gun_master_curve
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

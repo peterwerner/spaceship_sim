@@ -1,12 +1,8 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\FlowRoom.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\RigidbodyFirstPersonController.cs">
     <Files>
-      <File FileName="Assets\Scripts\FlowRoom.cs" Line="231" Column="3" />
-      <File FileName="Assets\Scripts\FlowConnector.cs" Line="125" Column="16" />
-      <File FileName="Assets\Scripts\FlowVoxel.cs" Line="11" Column="65" />
-      <File FileName="Assets\Scripts\FlowRoomCollection.cs" Line="22" Column="2" />
-      <File FileName="Assets\Scripts\FlowSimManager.cs" Line="26" Column="1" />
+      <File FileName="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\RigidbodyFirstPersonController.cs" Line="204" Column="35" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
