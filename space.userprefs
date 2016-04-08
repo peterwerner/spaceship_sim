@@ -1,10 +1,11 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\equipable\Equipable.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\equipable\Gun.cs">
     <Files>
-      <File FileName="Assets\Scripts\equipable\Equipable.cs" Line="70" Column="16" />
-      <File FileName="Assets\Scripts\equipable\Inventory.cs" Line="32" Column="3" />
-      <File FileName="Assets\Scripts\equipable\InventoryPlayer.cs" Line="13" Column="18" />
+      <File FileName="Assets\Scripts\equipable\Gun.cs" Line="74" Column="10" />
+      <File FileName="Assets\Scripts\player\WeaponControl.cs" Line="16" Column="52" />
+      <File FileName="Assets\Scripts\player\UseKey.cs" Line="15" Column="4" />
+      <File FileName="Assets\Scripts\equipable\Inventory.cs" Line="35" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

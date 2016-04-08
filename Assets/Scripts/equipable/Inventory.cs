@@ -2,9 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof(AudioSource))]
 public abstract class Inventory : MonoBehaviour {
 
+	Dictionary<int, int> ammoPool = new Dictionary<int, int>();
 	protected List<Equipable> items = new List<Equipable>();
+	protected AudioSource audioSource;
+
+
+	void Start ()
+	{
+		audioSource = GetComponent<AudioSource>();
+	}
 
 
 	public bool Equip (Equipable item)
@@ -26,6 +35,15 @@ public abstract class Inventory : MonoBehaviour {
 	}
 
 
+	public int RequestAmmo (int type, int numDesired) { 
+		if (!ammoPool.ContainsKey(type))
+			return 0;
+		int numGiven = Mathf.Min(numDesired, ammoPool[type]);
+		ammoPool[type] -= numGiven;
+		return numGiven;
+	}
+
+
 	public virtual bool CanEquipItem (Equipable item) 
 	{
 		return !(items.Contains(item));
@@ -39,5 +57,10 @@ public abstract class Inventory : MonoBehaviour {
 	protected abstract void OnEquipItem (Equipable item);
 
 	protected abstract void OnUnequipItem (Equipable item);
+
+	public abstract Equipable GetCurrentItem();
+
+
+	public void PlayOneShot(AudioClip clip) { audioSource.PlayOneShot(clip); }
 
 }

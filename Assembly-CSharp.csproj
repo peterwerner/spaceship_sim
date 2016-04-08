@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\equipable\Inventory.cs" />
      <Compile Include="Assets\Scripts\equipable\InventoryPlayer.cs" />
      <Compile Include="Assets\Scripts\player\UseKey.cs" />
+     <Compile Include="Assets\Scripts\player\WeaponControl.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />
      <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />

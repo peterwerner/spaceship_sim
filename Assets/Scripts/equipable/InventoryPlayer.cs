@@ -19,4 +19,7 @@ public class InventoryPlayer : Inventory {
 			current = null;
 	}
 
+
+	public override Equipable GetCurrentItem() { return current; }
+
 }
