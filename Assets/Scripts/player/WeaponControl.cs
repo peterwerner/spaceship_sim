@@ -5,7 +5,7 @@ public class WeaponControl : MonoBehaviour {
 
 	[SerializeField] Inventory inventory;
 	[SerializeField] LayerMask layermask;
-	[SerializeField] KeyCode shootKey;
+	[SerializeField] KeyCode shootKey = KeyCode.Mouse0, reloadKey = KeyCode.E;
 
 	
 	void Update () 
@@ -15,6 +15,8 @@ public class WeaponControl : MonoBehaviour {
 			gun.layermask = layermask;
 			if (Input.GetKeyDown(shootKey) || (gun.Automatic && Input.GetKey(shootKey)))
 				gun.Shoot();
+			if (Input.GetKeyDown(reloadKey))
+				gun.Reload();
 		}
 	}
 

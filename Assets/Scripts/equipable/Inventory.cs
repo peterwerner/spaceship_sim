@@ -20,6 +20,21 @@ public abstract class Inventory : MonoBehaviour {
 	{
 		if (!CanEquipItem(item) || !item.Equip(this))
 			return false;
+		if (item is Gun) {
+			Gun gun = (Gun)item;
+			// Add its ammo type to the ammo pool if it isn't already there
+			if (!ammoPool.ContainsKey(gun.AmmoName.GetHashCode()))
+				ammoPool[gun.AmmoName.GetHashCode()] = 0;
+			// If we try to pick up a gun that we already have, destroy it and take its ammo
+			foreach (Equipable other in items) {
+				Gun otherGun = (Gun)other;
+				if (otherGun.Name == gun.Name) {
+					ammoPool[gun.AmmoName.GetHashCode()] = ammoPool[gun.AmmoName.GetHashCode()] + gun.AmmoInClip;
+					Destroy(gun.gameObject);
+					return true;
+				}
+			}
+		}
 		items.Add(item);
 		OnEquipItem(item);
 		return true;
@@ -35,12 +50,15 @@ public abstract class Inventory : MonoBehaviour {
 	}
 
 
-	public int RequestAmmo (int type, int numDesired) { 
-		if (!ammoPool.ContainsKey(type))
-			return 0;
-		int numGiven = Mathf.Min(numDesired, ammoPool[type]);
-		ammoPool[type] -= numGiven;
+	public int RequestAmmo (Gun.AmmoType type, int numDesired) { 
+		int numGiven = Mathf.Min(numDesired, PeekAmmo(type));
+		ammoPool[type.GetHashCode()] -= numGiven;
 		return numGiven;
+	}
+	public int PeekAmmo (Gun.AmmoType type) { 
+		if (!ammoPool.ContainsKey(type.GetHashCode()))
+			return 0;
+		return ammoPool[type.GetHashCode()];
 	}
 
 

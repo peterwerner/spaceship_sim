@@ -14,9 +14,9 @@ public abstract class Equipable : MonoBehaviour {
 	[SerializeField] Transform worldView;
 	protected State state = State.FREE_WORLD;
 	protected Inventory inventory = null;
+	protected EquipableFpsView fpsView = null;
 	Rigidbody rigidBody;
 	new Collider collider;
-	EquipableFpsView fpsView = null;
 
 	protected virtual void Awake () 
 	{
@@ -75,8 +75,11 @@ public abstract class Equipable : MonoBehaviour {
 	}
 
 
+
+	/// <summary>Called when this is added to an inventory.</summary>
 	protected abstract void OnEquip (Inventory inventory);
 
+	/// <summary>Called when this is dropped from an inventory into the world.</summary>
 	protected abstract void OnUnequip (Inventory inventory);
 
 

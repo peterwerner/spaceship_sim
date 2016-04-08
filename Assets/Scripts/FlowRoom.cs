@@ -78,6 +78,8 @@ public class FlowRoom : ListComponent<FlowRoom> {
 
 	void FixedUpdate()
 	{
+		ownedObjects.RemoveAll(item => item == null);
+
 		if (simType == SimType.FULL) 
 			UpdateVoxels(Time.fixedDeltaTime);
 

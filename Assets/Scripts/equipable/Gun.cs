@@ -4,6 +4,15 @@ using System;
 
 public class Gun : Equipable {
 
+	/* DEBUG TEMP CODE PLS REPLACE ME LATER */
+	void OnGUI()
+	{
+		if (state == State.EQUIPPED_FPS)
+			GUI.Label(new Rect(Vector2.zero, new Vector2(200, 50)), "Ammo: " + numShotsLoaded + " | " + inventory.PeekAmmo(ammoType));
+	}
+
+	static string animShoot = "Shoot", animReload = "Reload";
+
 	public enum GunName {};
 	public enum AmmoType {};
 
@@ -17,6 +26,8 @@ public class Gun : Equipable {
 		[SerializeField] public float maxRange = 500f;
 		[SerializeField] public bool automatic = false;
 		[SerializeField] public int clipSize = 1;
+		[SerializeField] public float reloadTimeClipFull = 1f;
+		[SerializeField] public float reloadTimeCanShoot = 0.2f;
 	}
 
 	[HideInInspector] public LayerMask layermask;
@@ -25,7 +36,8 @@ public class Gun : Equipable {
 	[SerializeField] GunStats stats;
 	[SerializeField] AudioClip audioShoot; 
 	int numShotsLoaded = 0;
-	float timeSinceLastShot = 0;
+	float timeSinceLastShot = 0, timeSinceStartedReload = 0;
+	bool reloading = false;
 
 
 	void Start ()
@@ -37,12 +49,20 @@ public class Gun : Equipable {
 	void Update ()
 	{
 		timeSinceLastShot += Time.deltaTime;
+		if (reloading) {
+			if (timeSinceStartedReload >= stats.reloadTimeClipFull)
+				ReloadFinish();
+			if (timeSinceStartedReload >= stats.reloadTimeClipFull + stats.reloadTimeCanShoot)
+				reloading = false;
+			else
+				timeSinceStartedReload += Time.deltaTime;
+		}
 	}
 
 
 	public bool Shoot ()
 	{
-		if (timeSinceLastShot < stats.timeBetweenShots || numShotsLoaded <= 0) 
+		if (reloading || timeSinceLastShot < stats.timeBetweenShots || numShotsLoaded <= 0) 
 			return false;
 
 		for (int i = 0; i < stats.bulletsPerShot; i++)
@@ -61,17 +81,25 @@ public class Gun : Equipable {
 		}
 		if (audioShoot)
 			inventory.PlayOneShot(audioShoot);
+		fpsView.Anim.SetTrigger(animShoot);
 		timeSinceLastShot = 0;
 		numShotsLoaded--;
 		return true;
 	}
 
 
-	public void Reload ()
+	public bool Reload ()
 	{
-		int numReceived = inventory.RequestAmmo(ammoType.GetHashCode(), stats.clipSize - numShotsLoaded);
-
-		// TODO
+		if(reloading || numShotsLoaded >= stats.clipSize || inventory.PeekAmmo(ammoType) <= 0)
+			return false;
+		fpsView.Anim.SetTrigger(animReload);
+		timeSinceStartedReload = 0;
+		reloading = true;
+		return true;
+	}
+	void ReloadFinish ()
+	{
+		numShotsLoaded += inventory.RequestAmmo(ammoType, stats.clipSize - numShotsLoaded);
 	}
 
 
@@ -81,11 +109,19 @@ public class Gun : Equipable {
 
 	protected override void OnUnequip (Inventory inventory)
 	{
+		reloading = false;
+	}
+
+
+	void OnDisable ()
+	{
+		reloading = false;
 	}
 
 
 	public bool Automatic { get { return stats.automatic; } }
 	public GunName Name { get { return uniqueName; } }
-	public AmmoType Ammo { get { return ammoType; } }
+	public AmmoType AmmoName { get { return ammoType; } }
+	public int AmmoInClip { get { return numShotsLoaded; } }
 
 }
