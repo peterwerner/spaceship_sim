@@ -108,21 +108,21 @@ public class FlowConnector : MonoBehaviour {
 			float atmoDiff = 0;
 			if (roomA) {
 				if (roomB)
-					atmoDiff = roomA.Atmosphere - roomB.Atmosphere;
+					atmoDiff = roomA.AvgAtmosphere - roomB.AvgAtmosphere;
 				else
-					atmoDiff = roomA.Atmosphere - FlowSimManager.AmbientAtmosphere;
+					atmoDiff = roomA.AvgAtmosphere - FlowSimManager.AmbientAtmosphere;
 			}
 			flowCheap = atmoDiff * FlowSimManager.Radius * 2 * pairs.Length;	// atmoDiff * approximate area
 
 			if (roomA && roomA.SimulationType == FlowRoom.SimType.CHEAP) {
 				for (int i = 0; i < pairs.GetLength(0); i++) {
-					pairs[i, 0].SetAtmosphere(roomA.Atmosphere);
+					pairs[i, 0].SetAtmosphere(roomA.AvgAtmosphere);
 					pairs[i, 0].Flow = roomA.GetCheapFlow();
 				}
 			}
 			if (roomB && roomB.SimulationType == FlowRoom.SimType.CHEAP) {
 				for (int i = 0; i < pairs.GetLength(0); i++) {
-					pairs[i, 1].SetAtmosphere(roomB.Atmosphere);
+					pairs[i, 1].SetAtmosphere(roomB.AvgAtmosphere);
 					pairs[i, 1].Flow = roomB.GetCheapFlow();
 				}
 			}

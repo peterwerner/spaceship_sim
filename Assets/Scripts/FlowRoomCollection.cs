@@ -31,12 +31,6 @@ public class FlowRoomCollection : MonoBehaviour {
 
 
 	/// <summary>Returns the force vector at a given point in the room collection.</summary>
-	/// /// <param name="success">True IFF the point belonged to one of the rooms.</param>
-	public Vector3 GetForceAt(Vector3 pos, out bool success) 
-	{
-		return GetForceAt(pos, false, out success);
-	}
-	/// <summary>Returns the force vector at a given point in the room collection.</summary>
 	/// <param name="onlyFullSimRooms">Should rooms running cheap simulations be ignored?</param>
 	/// /// <param name="success">True IFF the point belonged to one of the rooms.</param>
 	public Vector3 GetForceAt(Vector3 pos, bool onlyFullSimRooms, out bool success) 
@@ -63,8 +57,8 @@ public class FlowRoomCollection : MonoBehaviour {
 			Debug.LogError("GetRandomRoomWeighted: bias arguments outside of acceptable range [0, 1]");
 		float baseline = 0.001f, sumWeights = 0f, maxFlow = Mathf.NegativeInfinity;
 		foreach (FlowRoom room in rooms)
-			if (room.SimulationType == FlowRoom.SimType.FULL && baseline + room.GetFlowMagnitude() > maxFlow) 
-				maxFlow = baseline + room.GetFlowMagnitude();
+			if (room.SimulationType == FlowRoom.SimType.FULL && baseline + room.FlowMagnitude > maxFlow) 
+				maxFlow = baseline + room.FlowMagnitude;
 		foreach (FlowRoom room in rooms)
 			if (room.SimulationType == FlowRoom.SimType.FULL)
 				sumWeights += GetRoomWeight(room, flowBias, atmoBias, baseline, maxFlow);
@@ -80,9 +74,32 @@ public class FlowRoomCollection : MonoBehaviour {
 	}
 	private float GetRoomWeight(FlowRoom room, float flowBias, float atmoBias, float baseline, float maxFlow)
 	{
-		return flowBias * ((baseline + room.GetFlowMagnitude()) / maxFlow) 
-			+ atmoBias * (baseline + room.GetFlowMagnitude())
+		return flowBias * ((baseline + room.FlowMagnitude) / maxFlow) 
+			+ atmoBias * (baseline + room.FlowMagnitude)
 			+ Mathf.Min(0, 1 - (flowBias + atmoBias));
+	}
+
+
+	public float GetTotalAtmosphere ()
+	{
+		float total = 0;
+		foreach (FlowRoom room in rooms) {
+			if (room.SimulationType == FlowRoom.SimType.FULL) {
+				total += room.Atmosphere;
+			}
+		}
+		return total;
+	}
+
+	public float GetTotalFlowMagnitude ()
+	{
+		float total = 0;
+		foreach (FlowRoom room in rooms) {
+			if (room.SimulationType == FlowRoom.SimType.FULL) {
+				total += room.FlowMagnitude;
+			}
+		}
+		return total;
 	}
 
 
