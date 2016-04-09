@@ -5,6 +5,8 @@ using System.Collections.Generic;
 [RequireComponent (typeof(BoxCollider))]
 public class FlowConnector : MonoBehaviour {
 
+	[Tooltip ("Forces this connector to not connect to ignored rooms.")]
+	[SerializeField] FlowRoom[] ignore;
 	public bool isOpen = false;
 	bool wasOpen = false;
 	float flowCheap = 0;
@@ -25,13 +27,14 @@ public class FlowConnector : MonoBehaviour {
 		
 	void Start()
 	{
+		List<FlowRoom> ignoreList = new List<FlowRoom>(ignore);
 		float closestDistA = Mathf.Infinity, closestDistB = Mathf.Infinity;
 
 		// Connect to the rooms that this is currently touching. This should connect to either 1 or 2 rooms.
 		bool foundTooManyRooms = false;
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
 		foreach (FlowRoom room in FlowRoom.InstanceList) {
-			if (room.Collider.bounds.Intersects(boxCollider.bounds)) {
+			if (room.Collider.bounds.Intersects(boxCollider.bounds) && !ignoreList.Contains(room)) {
 				if (!roomA)
 					roomA = room;
 				else if (!roomB)
@@ -45,18 +48,20 @@ public class FlowConnector : MonoBehaviour {
 		if (foundTooManyRooms) {
 			roomA = null;	roomB = null;
 			foreach (FlowRoom room in FlowRoom.InstanceList) {
-				if (room.Collider.bounds.Intersects(boxCollider.bounds)) {
+				if (room.Collider.bounds.Intersects(boxCollider.bounds) && !ignoreList.Contains(room)) {
+					float distClosestInRoom = Mathf.Infinity;
 					foreach (FlowVoxel voxel in room.FlowVoxels) {
-						if (Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position)) < closestDistA) {
-							roomB = roomA;
-							closestDistB = closestDistA;
-							roomA = room;
-							closestDistA = Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position));
-						}
-						else if (Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position)) < closestDistB) {
-							roomB = room;
-							closestDistB = Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position));
-						}
+						distClosestInRoom = Mathf.Min(distClosestInRoom, Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position)));
+					}
+					if (distClosestInRoom < closestDistA) {
+						roomB = roomA;
+						closestDistB = closestDistA;
+						roomA = room;
+						closestDistA = distClosestInRoom;
+					}
+					else if (distClosestInRoom < closestDistB) {
+						roomB = room;
+						closestDistB = distClosestInRoom;
 					}
 				}
 			}
@@ -199,9 +204,9 @@ public class FlowConnector : MonoBehaviour {
 	{
 		Quaternion rotationIntial = boxCollider.transform.rotation;
 		boxCollider.transform.rotation = Quaternion.Euler(Vector3.zero);
-		Vector3 pointRotated = rotationIntial * (point - boxCollider.transform.position) + boxCollider.transform.position;
+		Vector3 pointRotated = Quaternion.Inverse(rotationIntial) * (point - boxCollider.transform.position) + boxCollider.transform.position;
 		Vector3 closestRotated = boxCollider.bounds.Contains(pointRotated) ? pointRotated : boxCollider.ClosestPointOnBounds(pointRotated);
-		Vector3 closest = Quaternion.Inverse(rotationIntial) * (closestRotated - boxCollider.transform.position) + boxCollider.transform.position;
+		Vector3 closest = rotationIntial * (closestRotated - boxCollider.transform.position) + boxCollider.transform.position;
 		boxCollider.transform.rotation = rotationIntial;
 		return closest;
 	}
@@ -217,6 +222,16 @@ public class FlowConnector : MonoBehaviour {
 		if (pairs != null) 
 			for (int i = 0; i < pairs.GetLength(0); i++)
 				Gizmos.DrawLine(pairs[i, 0].Position, pairs[i, 1].Position);
+
+		Gizmos.color = Color.black;
+		if (pairs != null) {
+			for (int i = 0; i < pairs.GetLength(0); i++) {
+				if (roomA)
+					Gizmos.DrawLine(pairs[i, 0].Position, ClosestPointOnCollider(pairs[i, 0].Position));
+				if (roomB)
+					Gizmos.DrawLine(pairs[i, 1].Position, ClosestPointOnCollider(pairs[i, 1].Position));
+			}
+		}
 	}
 
 }
