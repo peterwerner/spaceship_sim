@@ -21,10 +21,14 @@ public class FlowConnector : MonoBehaviour {
 			Open();
 		wasOpen = isOpen;
 	}
+
 		
 	void Start()
 	{
+		float closestDistA = Mathf.Infinity, closestDistB = Mathf.Infinity;
+
 		// Connect to the rooms that this is currently touching. This should connect to either 1 or 2 rooms.
+		bool foundTooManyRooms = false;
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
 		foreach (FlowRoom room in FlowRoom.InstanceList) {
 			if (room.Collider.bounds.Intersects(boxCollider.bounds)) {
@@ -33,46 +37,81 @@ public class FlowConnector : MonoBehaviour {
 				else if (!roomB)
 					roomB = room;
 				else
-					print("Error: connector at " + this.transform.position.ToString() + " found more than 2 rooms. Ignoring extra rooms.");
+					foundTooManyRooms = true;
 			}
 		}
+		// If this found more than 2 rooms, pick the 2 rooms with the closest voxel to this
+		// Let roomA be the closest room and roomB be the second closest room
+		if (foundTooManyRooms) {
+			roomA = null;	roomB = null;
+			foreach (FlowRoom room in FlowRoom.InstanceList) {
+				if (room.Collider.bounds.Intersects(boxCollider.bounds)) {
+					foreach (FlowVoxel voxel in room.FlowVoxels) {
+						if (Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position)) < closestDistA) {
+							roomB = roomA;
+							closestDistB = closestDistA;
+							roomA = room;
+							closestDistA = Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position));
+						}
+						else if (Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position)) < closestDistB) {
+							roomB = room;
+							closestDistB = Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position));
+						}
+					}
+				}
+			}
+		}
+		// If this found no rooms, destroy self and report error
 		if (!roomA) {
-			print("Error: connector at " + this.transform.position.ToString() + " found 0 rooms. Destroying connector.");
+			Debug.LogError("Error: connector at " + this.transform.position.ToString() + " found 0 rooms. Destroying connector.");
 			GameObject.Destroy(this.gameObject);
 			return;
 		}
+
+		closestDistA = Mathf.Infinity;
+		foreach (FlowVoxel voxelA in roomA.FlowVoxels) {
+			if (Vector3.Distance(voxelA.Position, ClosestPointOnCollider(voxelA.Position)) < closestDistA)
+				closestDistA = Vector3.Distance(voxelA.Position, ClosestPointOnCollider(voxelA.Position));
+		}
+			
 		// Register pairs of voxels, where each pair has one voxel from roomA and one from roomB
 		// If roomB is null, each pair has one voxel from roomA and the ambient atmosphere voxel
 		List<FlowVoxel[]> pairList = new List<FlowVoxel[]>();
 		if (!roomB) {
 			foreach (FlowVoxel voxel in roomA.FlowVoxels) {
-				if (Vector3.Distance(voxel.Position, boxCollider.ClosestPointOnBounds(voxel.Position)) < FlowSimManager.Radius * 2) {
-					FlowVoxelConst ambientVoxel = new FlowVoxelConst(boxCollider.ClosestPointOnBounds(voxel.Position));
+				if (Vector3.Distance(voxel.Position, ClosestPointOnCollider(voxel.Position)) <= closestDistA + 0.01f) {
+					FlowVoxelConst ambientVoxel = new FlowVoxelConst(ClosestPointOnCollider(voxel.Position));
 					roomA.AddExtraVoxel(ambientVoxel);
 					pairList.Add(new FlowVoxel[] { voxel, ambientVoxel });
 				}
 			}
 		}
-		// If roomB is NOT null, look at all voxels in A and B that are within one voxel-radius of the connector bounds
+		// If roomB is NOT null, look at all voxels in A and B that are within one voxel-width of the connector bounds
 		// For each of the A voxels, pair it with the closest B voxel (if no B voxel within one voxel-width, abandon the A voxel)
 		else {
+			closestDistB = Mathf.Infinity;
+			foreach (FlowVoxel voxelB in roomB.FlowVoxels) {
+				if (Vector3.Distance(voxelB.Position, ClosestPointOnCollider(voxelB.Position)) < closestDistB)
+					closestDistB = Vector3.Distance(voxelB.Position, ClosestPointOnCollider(voxelB.Position));
+			}
+
 			List<FlowVoxel> candidatesB = new List<FlowVoxel>();
 			foreach (FlowVoxel voxelB in roomB.FlowVoxels)
-				if (Vector3.Distance(voxelB.Position, boxCollider.ClosestPointOnBounds(voxelB.Position)) < FlowSimManager.Radius * 2)
+				if (Vector3.Distance(voxelB.Position, ClosestPointOnCollider(voxelB.Position)) <= closestDistB + 0.01f)
 					candidatesB.Add(voxelB);
 			
 			float distanceClosest = Mathf.Infinity;
 			foreach (FlowVoxel voxelA in roomA.FlowVoxels)
-				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowSimManager.Radius * 2)
+				if (Vector3.Distance(voxelA.Position, ClosestPointOnCollider(voxelA.Position)) <= closestDistA + 0.01f)
 					foreach (FlowVoxel voxelB in candidatesB)
 						if (Vector3.Distance(voxelA.Position, voxelB.Position) < distanceClosest)
 							distanceClosest = Vector3.Distance(voxelA.Position, voxelB.Position);
 			
 			foreach (FlowVoxel voxelA in roomA.FlowVoxels) {
-				if (Vector3.Distance(voxelA.Position, boxCollider.ClosestPointOnBounds(voxelA.Position)) < FlowSimManager.Radius * 2) {
+				if (Vector3.Distance(voxelA.Position, ClosestPointOnCollider(voxelA.Position)) <= closestDistA + 0.01f) {
 					FlowVoxel closestInB = null;
 					foreach (FlowVoxel voxelB in candidatesB)
-						if (Vector3.Distance(voxelA.Position, voxelB.Position) <= distanceClosest + 0.001f)
+						if (Vector3.Distance(voxelA.Position, voxelB.Position) <= distanceClosest + 0.01f)
 							closestInB = voxelB;
 					if (closestInB != null)
 						pairList.Add(new FlowVoxel[] { voxelA, closestInB });
@@ -153,6 +192,18 @@ public class FlowConnector : MonoBehaviour {
 		if (isOpen && room == roomB)
 			return -1 * flowCheap;
 		return 0;
+	}
+
+
+	Vector3 ClosestPointOnCollider (Vector3 point)
+	{
+		Quaternion rotationIntial = boxCollider.transform.rotation;
+		boxCollider.transform.rotation = Quaternion.Euler(Vector3.zero);
+		Vector3 pointRotated = rotationIntial * (point - boxCollider.transform.position) + boxCollider.transform.position;
+		Vector3 closestRotated = boxCollider.bounds.Contains(pointRotated) ? pointRotated : boxCollider.ClosestPointOnBounds(pointRotated);
+		Vector3 closest = Quaternion.Inverse(rotationIntial) * (closestRotated - boxCollider.transform.position) + boxCollider.transform.position;
+		boxCollider.transform.rotation = rotationIntial;
+		return closest;
 	}
 
 
