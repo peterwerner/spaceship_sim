@@ -13,14 +13,8 @@ public class FlowConnector : MonoBehaviour {
 	FlowVoxel[ , ] pairs;	// Pairs of: roomA voxel, roomB voxel
 
 
-	bool started = false;
-	public bool Initialized { get { return started; } }
 	void Update()
 	{
-		if (!started) {
-			started = true;
-			LateStart();
-		}
 		if (wasOpen && !isOpen)
 			Close();
 		else if (!wasOpen && isOpen)
@@ -28,7 +22,7 @@ public class FlowConnector : MonoBehaviour {
 		wasOpen = isOpen;
 	}
 		
-	void LateStart()
+	void Start()
 	{
 		// Connect to the rooms that this is currently touching. This should connect to either 1 or 2 rooms.
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));

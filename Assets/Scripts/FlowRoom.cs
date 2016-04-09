@@ -30,7 +30,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	public FlowVoxel[ , , ] FlowVoxels { get { return voxels; } }
 
 
-	void Start()
+	void Awake()
 	{
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
 		rotationInitial = transform.rotation;

@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent (typeof(ParticleSystem))]
 public class FlowParticleSystem : MonoBehaviour {
 
-	[SerializeField] float rateConstant = 0.01f;
+	[SerializeField] float rateConstant = 0.001f;
 	[SerializeField] float speedConstant = 0.5f;
 	[Tooltip ("Once a particle reaches this velocity, it is fully translucent. Particles below this value are partially transparent.")]
 	[SerializeField] float velocityMaxAlpha = 10f;
@@ -25,11 +25,10 @@ public class FlowParticleSystem : MonoBehaviour {
 	{
 		// Jumps to a random voxel in a random room from the room collection each frame
 		// Bias towards rooms with higher flow, higher atmosphere
-		if (roomCollection.Initialized)
-			this.transform.position = roomCollection.GetRandomRoomWeighted(0.6f, 0.2f).GetRandomVoxel().Position;
+		this.transform.position = roomCollection.GetRandomRoomWeighted(0.6f, 0.2f).GetRandomVoxel().Position;
 
 		rate = emission.rate;
-		rate.constantMax = roomCollection.GetTotalFlowMagnitude() * rateConstant;
+		rate.constantMax = roomCollection.GetTotalFlowMagnitude() * roomCollection.GetTotalAtmosphere() * rateConstant;
 		rate.constantMin = rate.constantMax;
 		emission.rate = rate;
 

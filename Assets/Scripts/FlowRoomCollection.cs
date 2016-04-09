@@ -9,19 +9,7 @@ public class FlowRoomCollection : MonoBehaviour {
     List<FlowRoom> rooms = new List<FlowRoom>();
 
 
-    bool started = false;
-	public bool Initialized { get { return started; } }
-    void Update()
-    {
-        if (!started)
-        {
-            started = true;
-            LateStart();
-        }
-    }
-
-
-    void LateStart()
+    void Start()
     {
         boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
         foreach (FlowRoom room in FlowRoom.InstanceList)
