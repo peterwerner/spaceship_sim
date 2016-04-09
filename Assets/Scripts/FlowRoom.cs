@@ -16,6 +16,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	[SerializeField] ForceApplierBase gravity;
 	float atmosphere, averageFlowMagnitude;
 	Vector3 flowForceCheap = Vector3.zero;
+	Quaternion rotationInitial;
 	SimType simType = SimType.FULL;
 	BoxCollider boxCollider;
 	List<GameObject> ownedObjects = new List<GameObject>();	// Objects that are currently within the trigger volume
@@ -31,13 +32,14 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	void Start()
 	{
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
+		rotationInitial = transform.rotation;
 		atmosphere = atmosphereStart;
 		// Construct voxels - fill the collider's bounds
 		float voxelSize = FlowSimManager.Radius * 2;
 		Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
 		Vector3 cornerLo = transform.position - 0.5f * colliderSize;
 		Vector3 cornerHi = transform.position + 0.5f * colliderSize;
-		Vector3 numVoxels = (cornerHi - cornerLo) / voxelSize;
+		Vector3 numVoxels = 0.5f * Vector3.one + (cornerHi - cornerLo) / voxelSize;
 		voxels = new FlowVoxel[(int)numVoxels.x, (int)numVoxels.y, (int)numVoxels.z];
 		Vector3 offsetStart = (colliderSize - (new Vector3(voxels.GetLength(0), voxels.GetLength(1), voxels.GetLength(2)) - Vector3.one) * voxelSize) / 2;
 		/*
@@ -54,7 +56,9 @@ public class FlowRoom : ListComponent<FlowRoom> {
 			for (j = 0, y = cornerLo.y + offsetStart.y;   j < voxels.GetLength(1);   j++, y += voxelSize) {
 				for (k = 0, z = cornerLo.z + offsetStart.z;   k < voxels.GetLength(2);   k++, z += voxelSize) 
 				{
-					voxels[i, j, k] = new FlowVoxel(new Vector3(x,y,z), atmosphereStart);
+					Vector3 pos = rotationInitial * (new Vector3(x,y,z) - transform.position) + transform.position;
+
+					voxels[i, j, k] = new FlowVoxel(pos, atmosphereStart);
 					
 					if (i > 0)
 						voxels[i, j, k].AddNeighbor(voxels[i-1, j, k], true);
@@ -141,19 +145,21 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	}
 	/// <summary>Returns the force vector at a given point in the room.</summary>
 	/// <param name="success">true if pos was in the room's bounds</param> 
-	public Vector3 GetForceAt(Vector3 pos, out bool success) 
+	public Vector3 GetForceAt(Vector3 position, out bool success) 
 	{
-		if (!boxCollider.bounds.Contains(pos)) {
+		if (!boxCollider.bounds.Contains(position)) {
 			success = false;
 			return Vector3.zero;
 		}
+
+		Vector3 pos = Quaternion.Inverse(rotationInitial) * (position - transform.position) + transform.position;
 
 		if (simType == SimType.FULL) 
 		{
 			float voxelSize = FlowSimManager.Radius * 2;
 			Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
 			Vector3 cornerHi = transform.position + 0.5f * colliderSize;
-			Vector3 indices = (colliderSize - (cornerHi - pos)) / voxelSize;
+			Vector3 indices = (-0.5f * Vector3.one) + (colliderSize - (cornerHi - pos)) / voxelSize;
 			int i = (int)indices.x, j = (int)indices.y, k = (int)indices.z;
 			if (i < 0 || j < 0 || k < 0 || i >= voxels.GetLength(0) || j >= voxels.GetLength(1) || k >= voxels.GetLength(2)) {
 				success = false;
@@ -249,13 +255,16 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		if (boxCollider)
 			Gizmos.DrawWireCube(transform.position, Vector3.Scale(boxCollider.size, transform.lossyScale));
 		Gizmos.color = Color.yellow;
-		foreach (GameObject obj in ownedObjects)
+		foreach (GameObject obj in ownedObjects) {
 			Gizmos.DrawWireCube(obj.transform.position, obj.transform.lossyScale);
+			Gizmos.DrawLine(obj.transform.position, obj.transform.position + GetForceAt(obj.transform.position).normalized);
+		}
 		if (simType == SimType.FULL) {
 			foreach (FlowVoxel voxel in voxels)
 				voxel.DrawGizmo();
 			foreach (FlowVoxel voxel in voxelsExtra)
 				voxel.DrawGizmo();
+			Gizmos.color = Color.green;
 		}
 	}
 
