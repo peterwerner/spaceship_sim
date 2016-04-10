@@ -25,6 +25,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	List<FlowConnector> connectors = new List<FlowConnector>();
 	FlowVoxel[ , , ] voxels = new FlowVoxel[0, 0, 0];		// Discretization of the volume of the room; these voxels are used to determine forces
 	List<FlowVoxel> voxelsExtra = new List<FlowVoxel>();	// Additional voxels tied to this room, ie: constants tacked on by connectors
+	MoveControl player = null;
 
 	public float AvgAtmosphere	{ get { return avgAtmosphere; } }
 	public float Atmosphere	{ get { return avgAtmosphere * voxels.Length; } }
@@ -102,10 +103,14 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		foreach (GameObject obj in ownedObjects) {
 			gravity.ApplyTo(obj);
 			ForceApplierBase.ApplyForce(obj, GetForceAt(obj.transform.position));
-			MoveControl player = obj.GetComponent<MoveControl>();
-			if (player)
-				player.gravity = gravity.GetDirection(obj) * gravity.GetAcceleration();
 		}
+	}
+
+
+	void Update()
+	{
+		if (player)
+			player.gravity = gravity.GetDirection(player.gameObject) * gravity.GetAcceleration();
 	}
 
 
@@ -194,11 +199,15 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	void OnTriggerEnter(Collider other) 
 	{
 		FlowRoom room;
-		if (roomObjectRegistry.TryGetValue(other.gameObject, out room))
+		if (roomObjectRegistry.TryGetValue(other.gameObject, out room)) {
 			room.ownedObjects.Remove(other.gameObject);
+			if (player && other.gameObject == player.gameObject)
+				room.player = null;
+		}
 		roomObjectRegistry.Remove(other.gameObject);
 		roomObjectRegistry.Add(other.gameObject, this);
 		ownedObjects.Add(other.gameObject);	
+		player = other.gameObject.GetComponent<MoveControl>();
 	}
 
 	void OnTriggerExit(Collider other) 
@@ -207,6 +216,8 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		if (roomObjectRegistry.TryGetValue(other.gameObject, out room) && room == this)
 			roomObjectRegistry.Remove(other.gameObject);
 		ownedObjects.Remove(other.gameObject);
+		if (player && other.gameObject == player.gameObject)
+			player = null;
 	}
 
 

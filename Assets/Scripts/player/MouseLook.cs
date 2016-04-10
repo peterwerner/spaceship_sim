@@ -29,7 +29,7 @@ public class MouseLook {
 		if (rotatePlayerX)
 			character.Rotate(new Vector3(-xRot, yRot, 0), Space.Self);
 		else
-			character.Rotate(character.up * yRot);
+			character.Rotate(new Vector3(0, yRot, 0), Space.Self);
 		
 		cameraTargetRot *= Quaternion.Euler (-xRot, 0f, 0f);
 		cameraTargetRot = ClampRotationAroundXAxis(cameraTargetRot);

@@ -2,10 +2,8 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\player\MoveControl.cs">
     <Files>
-      <File FileName="Assets\Scripts\player\MoveControl.cs" Line="26" Column="64" />
-      <File FileName="Assets\Scripts\player\MouseLook.cs" Line="39" Column="7" />
-      <File FileName="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\RigidbodyFirstPersonController.cs" Line="229" Column="4" NotebookId="1" />
-      <File FileName="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\MouseLook.cs" Line="36" Column="48" NotebookId="1" />
+      <File FileName="Assets\Scripts\player\MoveControl.cs" Line="132" Column="39" />
+      <File FileName="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\RigidbodyFirstPersonController.cs" Line="155" Column="44" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
