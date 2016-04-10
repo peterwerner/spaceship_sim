@@ -31,4 +31,9 @@ public abstract class ForceApplierBase : MonoBehaviour {
 		return true;
 	}
 
+
+	public abstract Vector3 GetDirection(GameObject obj);
+
+	public float GetAcceleration() { return acceleration; }
+
 }

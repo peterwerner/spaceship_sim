@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\FlowVoxelConst.cs" />
      <Compile Include="Assets\Scripts\ForceApplierBase.cs" />
      <Compile Include="Assets\Scripts\ForceApplierDirectional.cs" />
+     <Compile Include="Assets\Scripts\ForceApplierPoint.cs" />
      <Compile Include="Assets\Scripts\ListComponent.cs" />
      <Compile Include="Assets\Scripts\SingletonComponent.cs" />
      <Compile Include="Assets\Scripts\equipable\Equipable.cs" />
@@ -61,6 +62,8 @@
      <Compile Include="Assets\Scripts\equipable\Gun.cs" />
      <Compile Include="Assets\Scripts\equipable\Inventory.cs" />
      <Compile Include="Assets\Scripts\equipable\InventoryPlayer.cs" />
+     <Compile Include="Assets\Scripts\player\MouseLook.cs" />
+     <Compile Include="Assets\Scripts\player\MoveControl.cs" />
      <Compile Include="Assets\Scripts\player\UseKey.cs" />
      <Compile Include="Assets\Scripts\player\WeaponControl.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />

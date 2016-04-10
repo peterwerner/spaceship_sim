@@ -12,6 +12,8 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	// Static registry of objects -> rooms, where each object is currently owned by that room
 	static Dictionary<GameObject, FlowRoom> roomObjectRegistry = new Dictionary<GameObject, FlowRoom>();
 
+	[SerializeField] bool forceCheapSim = false;
+	bool _forceCheapSim;
 	[SerializeField] [Tooltip("0 is vacuum, 1 is 1 atm")] [Range(0, 1)] float atmosphereStart = 1;
 	[SerializeField] ForceApplierBase gravity;
 	float avgAtmosphere, avgFlowMagnitude;
@@ -35,6 +37,11 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		boxCollider = (BoxCollider)GetComponent(typeof(BoxCollider));
 		rotationInitial = transform.rotation;
 		avgAtmosphere = atmosphereStart;
+		if (forceCheapSim) {
+			_forceCheapSim = true;
+			simType = SimType.CHEAP;
+			return;
+		}
 		// Construct voxels - fill the collider's bounds
 		float voxelSize = FlowSimManager.Radius * 2;
 		Vector3 colliderSize = Vector3.Scale(boxCollider.size, transform.lossyScale);
@@ -95,6 +102,9 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		foreach (GameObject obj in ownedObjects) {
 			gravity.ApplyTo(obj);
 			ForceApplierBase.ApplyForce(obj, GetForceAt(obj.transform.position));
+			MoveControl player = obj.GetComponent<MoveControl>();
+			if (player)
+				player.gravity = gravity.GetDirection(obj) * gravity.GetAcceleration();
 		}
 	}
 
@@ -208,7 +218,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 		}
 		set 
 		{
-			if (simType == value)
+			if (simType == value || _forceCheapSim)
 				return;
 			simType = value;
 			if (simType == SimType.FULL) {
