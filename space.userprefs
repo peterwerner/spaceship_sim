@@ -1,9 +1,11 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\player\MoveControl.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\FlowRoom.cs">
     <Files>
-      <File FileName="Assets\Scripts\player\MoveControl.cs" Line="132" Column="39" />
-      <File FileName="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\RigidbodyFirstPersonController.cs" Line="155" Column="44" />
+      <File FileName="Assets\Scripts\player\MoveControl.cs" Line="29" Column="23" />
+      <File FileName="Assets\Standard Assets\Characters\FirstPersonCharacter\Scripts\RigidbodyFirstPersonController.cs" Line="165" Column="28" />
+      <File FileName="Assets\Scripts\player\MouseLook.cs" Line="32" Column="36" />
+      <File FileName="Assets\Scripts\FlowRoom.cs" Line="219" Column="17" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

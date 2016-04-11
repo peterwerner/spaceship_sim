@@ -198,16 +198,18 @@ public class FlowRoom : ListComponent<FlowRoom> {
 
 	void OnTriggerEnter(Collider other) 
 	{
+		MoveControl playerComponent = other.gameObject.GetComponent<MoveControl>();
 		FlowRoom room;
 		if (roomObjectRegistry.TryGetValue(other.gameObject, out room)) {
 			room.ownedObjects.Remove(other.gameObject);
-			if (player && other.gameObject == player.gameObject)
+			if (playerComponent && other.gameObject == playerComponent.gameObject)
 				room.player = null;
 		}
+		if (playerComponent)
+			player = playerComponent;
 		roomObjectRegistry.Remove(other.gameObject);
 		roomObjectRegistry.Add(other.gameObject, this);
 		ownedObjects.Add(other.gameObject);	
-		player = other.gameObject.GetComponent<MoveControl>();
 	}
 
 	void OnTriggerExit(Collider other) 

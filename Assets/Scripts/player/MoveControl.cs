@@ -13,7 +13,11 @@ public class MoveControl : MonoBehaviour {
 		public float walkSpeed = 4;
 		public float jetpackSpeed = 4;
 		public float jumpSpeed = 40;
+		public float sprintSpeedMultiplier = 1.8f;
 		public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
+		public float dragWhileGrounded = 10f;
+		[Tooltip ("When gravity is below this value, enter jetpack mode")]
+		public float gravityThreshold = 0.1f;
 	}
 
 	[Serializable]
@@ -29,8 +33,6 @@ public class MoveControl : MonoBehaviour {
 	[SerializeField] MouseLook mouseLook;
 	[SerializeField] MovementSettings movementSettings;
 	[SerializeField] AdvancedSettings advancedSettings;
-	[Tooltip ("When gravity is below this value, enter jetpack mode")]
-	[SerializeField] float gravityThreshold = 0.1f;
 	new Rigidbody rigidbody;
 	new CapsuleCollider collider;
 	MoveMode moveMode = MoveMode.WALK;
@@ -52,7 +54,7 @@ public class MoveControl : MonoBehaviour {
 
 	void Update()
 	{
-		if (gravity.magnitude > gravityThreshold)
+		if (gravity.magnitude > movementSettings.gravityThreshold)
 			moveMode = MoveMode.WALK;
 		else
 			moveMode = MoveMode.JETPACK;
@@ -80,28 +82,36 @@ public class MoveControl : MonoBehaviour {
 	void FixedUpdate()
 	{
 		GroundCheck();
-		Vector3 v = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+		Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+		if (Input.GetButton("Sprint") && Mathf.Abs(Vector3.Angle(input, Vector3.forward)) <= 90)
+			input *= movementSettings.sprintSpeedMultiplier;
 
 		if (moveMode == MoveMode.WALK) 
 		{
-			v *= movementSettings.walkSpeed * SlopeMultiplier();
+			Vector3 v = input * movementSettings.walkSpeed * SlopeMultiplier();
 			v = transform.rotation * v;
-			Debug.DrawRay(this.transform.position + 0.1f * Vector3.one, v);
 			if (isGrounded) {
+				rigidbody.drag = movementSettings.dragWhileGrounded;
 				if (rigidbody.velocity.magnitude < v.magnitude)
 					rigidbody.AddForce(v, ForceMode.Impulse);
+				if (jump) {
+					rigidbody.drag = 0;
+					rigidbody.AddForce(transform.up * movementSettings.jumpSpeed, ForceMode.Impulse);
+					jump = false;
+				}
+				else if (input.magnitude < float.Epsilon && rigidbody.velocity.magnitude < 1)
+					rigidbody.Sleep();
 			}
-			if (jump && isGrounded) {
-				rigidbody.AddForce(transform.up * movementSettings.jumpSpeed, ForceMode.Impulse);
-				jump = false;
-			}
+			else
+				rigidbody.drag = 0;
 		}
 
 		else if (moveMode == MoveMode.JETPACK) 
 		{
-			v *= movementSettings.jetpackSpeed;
-			v = cam.transform.rotation * v;
-			rigidbody.AddForce(v, ForceMode.Acceleration);
+			rigidbody.drag = 0;
+			input *= movementSettings.jetpackSpeed;
+			input = cam.transform.rotation * input;
+			rigidbody.AddForce(input, ForceMode.Acceleration);
 		}
 	}
 
