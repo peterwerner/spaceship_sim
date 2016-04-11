@@ -25,7 +25,7 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	List<FlowConnector> connectors = new List<FlowConnector>();
 	FlowVoxel[ , , ] voxels = new FlowVoxel[0, 0, 0];		// Discretization of the volume of the room; these voxels are used to determine forces
 	List<FlowVoxel> voxelsExtra = new List<FlowVoxel>();	// Additional voxels tied to this room, ie: constants tacked on by connectors
-	MoveControl player = null;
+	PlayerController player = null;
 
 	public float AvgAtmosphere	{ get { return avgAtmosphere; } }
 	public float Atmosphere	{ get { return avgAtmosphere * voxels.Length; } }
@@ -109,8 +109,12 @@ public class FlowRoom : ListComponent<FlowRoom> {
 
 	void Update()
 	{
-		if (player)
+		// Notify the player controller of the gravity + atmosphere
+		if (player) {
 			player.gravity = gravity.GetDirection(player.gameObject) * gravity.GetAcceleration();
+			bool discard;
+			GetForceAt(player.transform.position, out discard, out player.atmosphere);
+		}
 	}
 
 
@@ -157,14 +161,16 @@ public class FlowRoom : ListComponent<FlowRoom> {
 	public Vector3 GetForceAt(Vector3 pos) 
 	{
 		bool success;
-		return GetForceAt(pos, out success);
+		float atmo;
+		return GetForceAt(pos, out success, out atmo);
 	}
 	/// <summary>Returns the force vector at a given point in the room.</summary>
 	/// <param name="success">true if pos was in the room's bounds</param> 
-	public Vector3 GetForceAt(Vector3 position, out bool success) 
+	public Vector3 GetForceAt(Vector3 position, out bool success, out float atmo) 
 	{
 		if (!boxCollider.bounds.Contains(position)) {
 			success = false;
+			atmo = 0;
 			return Vector3.zero;
 		}
 
@@ -179,26 +185,30 @@ public class FlowRoom : ListComponent<FlowRoom> {
 			int i = (int)indices.x, j = (int)indices.y, k = (int)indices.z;
 			if (i < 0 || j < 0 || k < 0 || i >= voxels.GetLength(0) || j >= voxels.GetLength(1) || k >= voxels.GetLength(2)) {
 				success = false;
+				atmo = 0;
 				return Vector3.zero;
 			}
 			success = true;
+			atmo = voxels[i, j, k].GetAtmosphere();
 			return voxels[i, j, k].Flow * FlowSimManager.FlowForceConstant;
 		}
 
 		else if (simType == SimType.CHEAP)
 		{
 			success = true;
+			atmo = avgAtmosphere;
 			return flowForceCheap;
 		}
 
 		success = false;
+		atmo = 0;
 		return Vector3.zero;
 	}
 
 
 	void OnTriggerEnter(Collider other) 
 	{
-		MoveControl playerComponent = other.gameObject.GetComponent<MoveControl>();
+		PlayerController playerComponent = other.gameObject.GetComponent<PlayerController>();
 		FlowRoom room;
 		if (roomObjectRegistry.TryGetValue(other.gameObject, out room)) {
 			room.ownedObjects.Remove(other.gameObject);

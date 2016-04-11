@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\AudioFx.cs" />
      <Compile Include="Assets\Scripts\FlowConnector.cs" />
      <Compile Include="Assets\Scripts\FlowParticleSystem.cs" />
      <Compile Include="Assets\Scripts\FlowRoom.cs" />
@@ -63,7 +64,7 @@
      <Compile Include="Assets\Scripts\equipable\Inventory.cs" />
      <Compile Include="Assets\Scripts\equipable\InventoryPlayer.cs" />
      <Compile Include="Assets\Scripts\player\MouseLook.cs" />
-     <Compile Include="Assets\Scripts\player\MoveControl.cs" />
+     <Compile Include="Assets\Scripts\player\PlayerController.cs" />
      <Compile Include="Assets\Scripts\player\UseKey.cs" />
      <Compile Include="Assets\Scripts\player\WeaponControl.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />

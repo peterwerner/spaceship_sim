@@ -4,7 +4,7 @@ using System;
 
 [RequireComponent(typeof (Rigidbody))]
 [RequireComponent(typeof (CapsuleCollider))]
-public class MoveControl : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
 	public enum MoveMode { WALK, JETPACK };
 
@@ -29,14 +29,16 @@ public class MoveControl : MonoBehaviour {
 
 
 	[HideInInspector] public Vector3 gravity = Vector3.zero;
+	[HideInInspector] public float atmosphere = 0;
 	[SerializeField] Camera cam;
 	[SerializeField] MouseLook mouseLook;
 	[SerializeField] MovementSettings movementSettings;
 	[SerializeField] AdvancedSettings advancedSettings;
+	[SerializeField] AudioFx audioFx;
 	new Rigidbody rigidbody;
 	new CapsuleCollider collider;
 	MoveMode moveMode = MoveMode.WALK;
-	bool jump = false, isGrounded = false, wasGrounded = false;
+	bool jump = false, isGrounded = false;
 	Vector3 groundContactNormal;
 
 
@@ -74,8 +76,12 @@ public class MoveControl : MonoBehaviour {
 
 		if (Input.GetButtonDown("Jump"))
 			jump = true;
+		
 		mouseLook.Update();
+		audioFx.UpdateFx(Time.deltaTime, atmosphere);
+
 		gravity = Vector3.zero;
+		atmosphere = 0;
 	}
 
 
@@ -127,7 +133,6 @@ public class MoveControl : MonoBehaviour {
 	/// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
 	private void GroundCheck()
 	{
-		wasGrounded = isGrounded;
 		RaycastHit hitInfo;
 		if (Physics.SphereCast(transform.position, collider.radius * (1.0f - advancedSettings.shellOffset), -1 * transform.up, out hitInfo,
 			((collider.height/2f) - collider.radius) + advancedSettings.groundCheckDistance, ~0, QueryTriggerInteraction.Ignore))
@@ -140,12 +145,6 @@ public class MoveControl : MonoBehaviour {
 			isGrounded = false;
 			groundContactNormal = transform.up;
 		}
-		/*
-		if (!wasGroudned && isGrounded && jumping)
-		{
-			jumping = false;
-		}
-		*/
 	}
 
 }

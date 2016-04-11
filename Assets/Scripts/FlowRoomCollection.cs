@@ -25,9 +25,10 @@ public class FlowRoomCollection : MonoBehaviour {
 	{
 		Vector3 force;
 		success = false;
+		float atmo;
 		foreach (FlowRoom room in rooms) {
 			if (onlyFullSimRooms && room.SimulationType == FlowRoom.SimType.FULL) {
-				force = room.GetForceAt(pos, out success);
+				force = room.GetForceAt(pos, out success, out atmo);
 				if (success)
 					return force;
 			}
