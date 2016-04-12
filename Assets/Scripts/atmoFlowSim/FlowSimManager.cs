@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+namespace AtmoFlowSim {
+	
 /// <summary>Singleton object used to give in-editor control over various constants.</summary>
 public class FlowSimManager : SingletonComponent<FlowSimManager> {
 
@@ -26,5 +28,7 @@ public class FlowSimManager : SingletonComponent<FlowSimManager> {
 	public static float CheapAtmoDeltaConstant { get { return FlowSimManager.Instance.cheapAtmoDeltaConstant; } }
 	public static float Radius { get { return voxelWidth * 0.5f; } }
 	public static float AmbientAtmosphere { get { return FlowSimManager.Instance.ambientAtmosphere; } }
+
+}
 
 }

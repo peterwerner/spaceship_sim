@@ -4,7 +4,8 @@ using System;
 using UnityEngine.Audio;
 
 [Serializable]
-public class AudioFx {
+/// <summary>Affects the 'space' audio mixer group based on atmosphere at the player's position</summary>
+public class EnvironmentalAudioFx {
 
 	[Serializable]
 	public class ExposedParameters {

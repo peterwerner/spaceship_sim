@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+namespace AtmoFlowSim {
+
 /**
  *	Like a normal flow voxel but it has a constant atmosphere
  *	Can represent a vacuum (constant atmosphere 0) or a vent (constant source of atmosphere)
@@ -29,5 +31,7 @@ public class FlowVoxelConst : FlowVoxel {
 	public override float GetAtmosphere() { return useAmbientAtmo ? FlowSimManager.AmbientAtmosphere : constantAtmo; }
 
 	public override void SetAtmosphere(float value) { /* Do nothing */ }
+
+}
 
 }

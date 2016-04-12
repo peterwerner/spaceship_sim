@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+namespace AtmoFlowSim {
+
 [RequireComponent (typeof(BoxCollider))]
 public class FlowConnector : MonoBehaviour {
 
@@ -233,5 +235,7 @@ public class FlowConnector : MonoBehaviour {
 			}
 		}
 	}
+
+}
 
 }

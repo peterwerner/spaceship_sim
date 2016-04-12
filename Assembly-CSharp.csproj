@@ -45,24 +45,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\AudioFx.cs" />
-     <Compile Include="Assets\Scripts\FlowConnector.cs" />
-     <Compile Include="Assets\Scripts\FlowParticleSystem.cs" />
-     <Compile Include="Assets\Scripts\FlowRoom.cs" />
-     <Compile Include="Assets\Scripts\FlowRoomCollection.cs" />
-     <Compile Include="Assets\Scripts\FlowSimManager.cs" />
-     <Compile Include="Assets\Scripts\FlowVoxel.cs" />
-     <Compile Include="Assets\Scripts\FlowVoxelConst.cs" />
      <Compile Include="Assets\Scripts\ForceApplierBase.cs" />
      <Compile Include="Assets\Scripts\ForceApplierDirectional.cs" />
      <Compile Include="Assets\Scripts\ForceApplierPoint.cs" />
      <Compile Include="Assets\Scripts\ListComponent.cs" />
+     <Compile Include="Assets\Scripts\MaterialFxManager.cs" />
      <Compile Include="Assets\Scripts\SingletonComponent.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowConnector.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowListener.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowParticleSystem.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowRoom.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowRoomCollection.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowSimManager.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowVoxel.cs" />
+     <Compile Include="Assets\Scripts\atmoFlowSim\FlowVoxelConst.cs" />
      <Compile Include="Assets\Scripts\equipable\Equipable.cs" />
      <Compile Include="Assets\Scripts\equipable\EquipableFpsView.cs" />
      <Compile Include="Assets\Scripts\equipable\Gun.cs" />
      <Compile Include="Assets\Scripts\equipable\Inventory.cs" />
      <Compile Include="Assets\Scripts\equipable\InventoryPlayer.cs" />
+     <Compile Include="Assets\Scripts\player\EnvironmentalAudioFx.cs" />
      <Compile Include="Assets\Scripts\player\MouseLook.cs" />
      <Compile Include="Assets\Scripts\player\PlayerController.cs" />
      <Compile Include="Assets\Scripts\player\UseKey.cs" />

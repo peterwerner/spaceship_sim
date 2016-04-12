@@ -77,6 +77,8 @@ public class Gun : Equipable {
 				Rigidbody rigidbodyHit = hit.collider.GetComponent<Rigidbody>();
 				if (rigidbodyHit)
 					rigidbodyHit.AddForceAtPosition(stats.impactForce * hit.normal * -1, hit.point);
+
+				MaterialFxManager.Instance.DoBulletImpact(hit);
 			}
 		}
 		if (audioShoot)

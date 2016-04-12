@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+namespace AtmoFlowSim {
+	
 public class FlowVoxel {
 
 	float atmosphere, atmosphereNext;
@@ -92,5 +94,7 @@ public class FlowVoxel {
 		Gizmos.DrawWireCube(position, FlowSimManager.Radius * 0.2f * Vector3.one);
 		Gizmos.DrawLine(position, position + flow);
 	}
+
+}
 
 }

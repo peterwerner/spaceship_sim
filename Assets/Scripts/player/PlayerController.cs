@@ -4,6 +4,7 @@ using System;
 
 [RequireComponent(typeof (Rigidbody))]
 [RequireComponent(typeof (CapsuleCollider))]
+[RequireComponent(typeof (AtmoFlowSim.FlowListener))]
 public class PlayerController : MonoBehaviour {
 
 	public enum MoveMode { WALK, JETPACK };
@@ -28,15 +29,14 @@ public class PlayerController : MonoBehaviour {
 	}
 
 
-	[HideInInspector] public Vector3 gravity = Vector3.zero;
-	[HideInInspector] public float atmosphere = 0;
 	[SerializeField] Camera cam;
 	[SerializeField] MouseLook mouseLook;
 	[SerializeField] MovementSettings movementSettings;
 	[SerializeField] AdvancedSettings advancedSettings;
-	[SerializeField] AudioFx audioFx;
+	[SerializeField] EnvironmentalAudioFx audioFx;
 	new Rigidbody rigidbody;
 	new CapsuleCollider collider;
+	AtmoFlowSim.FlowListener flowListener;
 	MoveMode moveMode = MoveMode.WALK;
 	bool jump = false, isGrounded = false;
 	Vector3 groundContactNormal;
@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour {
 		rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
 		rigidbody.drag = 0;
 		collider = GetComponent<CapsuleCollider>();
+		flowListener = GetComponent<AtmoFlowSim.FlowListener>();
 		mouseLook.Init();
 		Cursor.lockState = CursorLockMode.Locked;
 	}
@@ -56,7 +57,7 @@ public class PlayerController : MonoBehaviour {
 
 	void Update()
 	{
-		if (gravity.magnitude > movementSettings.gravityThreshold)
+		if (flowListener.gravity.magnitude > movementSettings.gravityThreshold)
 			moveMode = MoveMode.WALK;
 		else
 			moveMode = MoveMode.JETPACK;
@@ -65,7 +66,7 @@ public class PlayerController : MonoBehaviour {
 		{
 			// Orient such that 'up' is opposite to the direction of gravity
 			mouseLook.rotatePlayerX = false;
-			transform.rotation = Quaternion.FromToRotation(transform.up, -1 * gravity.normalized) * transform.rotation;
+			transform.rotation = Quaternion.FromToRotation(transform.up, -1 * flowListener.gravity.normalized) * transform.rotation;
 		}
 
 		else if (moveMode == MoveMode.JETPACK) 
@@ -78,22 +79,22 @@ public class PlayerController : MonoBehaviour {
 			jump = true;
 		
 		mouseLook.Update();
-		audioFx.UpdateFx(Time.deltaTime, atmosphere);
+		audioFx.UpdateFx(Time.deltaTime, flowListener.atmosphere);
 
-		gravity = Vector3.zero;
-		atmosphere = 0;
+		flowListener.gravity = Vector3.zero;
+		flowListener.atmosphere = 0;
 	}
 
 
 	void FixedUpdate()
 	{
 		GroundCheck();
-		Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-		if (Input.GetButton("Sprint") && Mathf.Abs(Vector3.Angle(input, Vector3.forward)) <= 90)
-			input *= movementSettings.sprintSpeedMultiplier;
 
 		if (moveMode == MoveMode.WALK) 
-		{
+		{		
+			Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+			if (Input.GetButton("Sprint") && Mathf.Abs(Vector3.Angle(input, Vector3.forward)) <= 90)
+				input *= movementSettings.sprintSpeedMultiplier;
 			Vector3 v = input * movementSettings.walkSpeed * SlopeMultiplier();
 			v = transform.rotation * v;
 			if (isGrounded) {
@@ -114,6 +115,8 @@ public class PlayerController : MonoBehaviour {
 
 		else if (moveMode == MoveMode.JETPACK) 
 		{
+			float yInput = (Input.GetButton("Sprint") ? 1 : 0) + (Input.GetButton("Crouch") ? -1 : 0);
+			Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), yInput, Input.GetAxisRaw("Vertical")).normalized;
 			rigidbody.drag = 0;
 			input *= movementSettings.jetpackSpeed;
 			input = cam.transform.rotation * input;
