@@ -78,6 +78,10 @@ public class Gun : Equipable {
 				if (rigidbodyHit)
 					rigidbodyHit.AddForceAtPosition(stats.impactForce * hit.normal * -1, hit.point);
 
+				Affectable affectable = hit.collider.GetComponent<Affectable>();
+				if (affectable)
+					affectable.Damage(stats.impactDamage, stats.impactForce, hit, ray.direction);
+
 				MaterialFxManager.Instance.DoBulletImpact(hit);
 			}
 		}

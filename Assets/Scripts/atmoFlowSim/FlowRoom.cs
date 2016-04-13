@@ -23,7 +23,7 @@ namespace AtmoFlowSim {
 		Quaternion rotationInitial;
 		SimType simType = SimType.FULL;
 		BoxCollider boxCollider;
-		List<GameObject> ownedObjects = new List<GameObject>();	// Objects that are currently within the trigger volume
+		HashSet<GameObject> ownedObjects = new HashSet<GameObject>();	// Objects that are currently within the trigger volume
 		List<FlowConnector> connectors = new List<FlowConnector>();
 		FlowVoxel[ , , ] voxels = new FlowVoxel[0, 0, 0];		// Discretization of the volume of the room; these voxels are used to determine forces
 		List<FlowVoxel> voxelsExtra = new List<FlowVoxel>();	// Additional voxels tied to this room, ie: constants tacked on by connectors
@@ -92,7 +92,7 @@ namespace AtmoFlowSim {
 
 		void FixedUpdate()
 		{
-			ownedObjects.RemoveAll(item => item == null);
+			ownedObjects.RemoveWhere(item => item == null);
 
 			if (simType == SimType.FULL) 
 				UpdateVoxels(Time.fixedDeltaTime);
@@ -212,8 +212,14 @@ namespace AtmoFlowSim {
 		}
 
 
+		void OnTriggerStay(Collider other) 
+		{
+			OnTriggerEnter(other);
+		}
 		void OnTriggerEnter(Collider other) 
 		{
+			if (ownedObjects.Contains(other.gameObject))
+				return;
 			FlowRoom room;
 			if (roomObjectRegistry.TryGetValue(other.gameObject, out room)) {
 				room.ownedObjects.Remove(other.gameObject);
