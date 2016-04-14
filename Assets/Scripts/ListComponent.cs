@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+[ExecuteInEditMode]
 public abstract class ListComponent<T> : MonoBehaviour where T : MonoBehaviour
 {
 	public static List<T> InstanceList = new List<T>();

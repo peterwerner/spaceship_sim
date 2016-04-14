@@ -16,7 +16,6 @@ public class NpcBrain : MonoBehaviour {
 	public void UpdatePath ()
 	{
 		path = pathManager.GetShortestPath(this.transform.position, moveTarget.position);
-		//print(path.Count);
 	}
 
 

@@ -11,7 +11,7 @@ namespace Pathfinding {
 			public Vector3 position;
 			public Node predecessor = null;
 			public float f = 0, g = 0;
-			public Connection[] neighbors;
+			public Connection[] neighbors = new Connection[0];
 		}
 		public class Connection {
 			public bool isEnabled = true;
