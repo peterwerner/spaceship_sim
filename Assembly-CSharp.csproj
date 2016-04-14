@@ -70,9 +70,9 @@
      <Compile Include="Assets\Scripts\equipable\InventoryPlayer.cs" />
      <Compile Include="Assets\Scripts\pathfinding\AStar.cs" />
      <Compile Include="Assets\Scripts\pathfinding\BuilderEditor.cs" />
-     <Compile Include="Assets\Scripts\pathfinding\DestroyAllInitializersOnStart.cs" />
      <Compile Include="Assets\Scripts\pathfinding\NodeInitializer.cs" />
-     <Compile Include="Assets\Scripts\pathfinding\PathManager.cs" />
+     <Compile Include="Assets\Scripts\pathfinding\PathManagerEditor.cs" />
+     <Compile Include="Assets\Scripts\pathfinding\PathManagerRuntime.cs" />
      <Compile Include="Assets\Scripts\player\EnvironmentalAudioFx.cs" />
      <Compile Include="Assets\Scripts\player\MouseLook.cs" />
      <Compile Include="Assets\Scripts\player\PlayerController.cs" />

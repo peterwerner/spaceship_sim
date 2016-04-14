@@ -5,7 +5,7 @@ using System.Collections.Generic;
 [RequireComponent (typeof(NpcController))]
 public class NpcBrain : MonoBehaviour {
 
-	public Pathfinding.PathManager pathManager;
+	public Pathfinding.PathManagerRuntime pathManager;
 	public Transform moveTarget;
 	List<Vector3> path  = new List<Vector3>();
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Pathfinding {
 
 	[ExecuteInEditMode]
-	public class PathManager : MonoBehaviour {
+	public class PathManagerEditor : MonoBehaviour {
 
 		[Tooltip ("Used to determine line of sight between nodes upon start.")]
 		[SerializeField] LayerMask layermask;
@@ -20,7 +20,6 @@ namespace Pathfinding {
 		public int BuildOpsPerFrame { get { return buildOpsPerFrame; } }
 		public Color GizmoColor { get { return isBuilding ? Color.red : Color.blue; } }
 
-		public List<AStar.Node> nodes = new List<AStar.Node>();
 		IEnumerator buildRoutine = null;
 
 
@@ -51,50 +50,18 @@ namespace Pathfinding {
 		/// <summary> Used in edit mode to destroy the navigation graph </summary>
 		public void UnBuild ()
 		{
-			if (buildRoutine != null)
-				StopCoroutine(buildRoutine);
+			PauseBuild();
 			foreach (NodeInitializer nodeInit in NodeInitializer.InstanceList) {
 				nodeInit.node = null;
 				nodeInit.neighbors.Clear();
 			}
-			nodes.Clear();
+		}
+
+		public void PauseBuild ()
+		{
+			if (buildRoutine != null)
+				buildRoutine = null;
 			isBuilding = false;
-		}
-			
-
-
-		/// <summary> Returns the shortest path from start (exclusive) to destination (inclusive) </summary>
-		public List<Vector3> GetShortestPath (Vector3 start, Vector3 destination) 
-		{
-			return AStar.GetShortestPath(GetClosestNode(start), GetClosestNode(destination));
-		}
-
-
-		AStar.Node GetClosestNode (Vector3 point)
-		{
-			AStar.Node closest = null;
-			float sqrDist, closestSqrDist = Mathf.Infinity;
-			foreach (AStar.Node node in nodes) {
-				sqrDist = (node.position - point).sqrMagnitude;
-				if (sqrDist < closestSqrDist) {
-					closestSqrDist = sqrDist;
-					closest = node;
-				}
-			}
-			return closest;
-		}
-
-
-		void OnDrawGizmos ()
-		{
-			Color color = Color.cyan;
-			color.a = 0.2f;
-			Gizmos.color = color;
-			foreach (AStar.Node node in nodes) {
-				Gizmos.DrawSphere(node.position, 0.1f);
-				foreach (AStar.Connection n in node.neighbors)
-					Gizmos.DrawLine(node.position, n.otherNode.position);
-			}
 		}
 
 	}
