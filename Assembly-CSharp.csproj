@@ -52,6 +52,8 @@
      <Compile Include="Assets\Scripts\ForceApplierPoint.cs" />
      <Compile Include="Assets\Scripts\ListComponent.cs" />
      <Compile Include="Assets\Scripts\MaterialFxManager.cs" />
+     <Compile Include="Assets\Scripts\NPC\NpcBrain.cs" />
+     <Compile Include="Assets\Scripts\NPC\NpcController.cs" />
      <Compile Include="Assets\Scripts\SingletonComponent.cs" />
      <Compile Include="Assets\Scripts\atmoFlowSim\FlowConnector.cs" />
      <Compile Include="Assets\Scripts\atmoFlowSim\FlowListener.cs" />
@@ -66,6 +68,9 @@
      <Compile Include="Assets\Scripts\equipable\Gun.cs" />
      <Compile Include="Assets\Scripts\equipable\Inventory.cs" />
      <Compile Include="Assets\Scripts\equipable\InventoryPlayer.cs" />
+     <Compile Include="Assets\Scripts\pathfinding\AStar.cs" />
+     <Compile Include="Assets\Scripts\pathfinding\NodeInitializer.cs" />
+     <Compile Include="Assets\Scripts\pathfinding\PathManager.cs" />
      <Compile Include="Assets\Scripts\player\EnvironmentalAudioFx.cs" />
      <Compile Include="Assets\Scripts\player\MouseLook.cs" />
      <Compile Include="Assets\Scripts\player\PlayerController.cs" />

@@ -15,4 +15,12 @@ public abstract class ListComponent<T> : MonoBehaviour where T : MonoBehaviour
 		InstanceList.Remove( this as T );
 	}
 
+	public static void DestroyAll()
+	{
+		T[] ListClone = new T[InstanceList.Count];
+		InstanceList.CopyTo(ListClone);
+		foreach (T instance in ListClone)
+			Destroy(instance.gameObject);
+	}
+
 }

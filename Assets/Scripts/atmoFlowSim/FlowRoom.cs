@@ -221,9 +221,8 @@ namespace AtmoFlowSim {
 			if (ownedObjects.Contains(other.gameObject))
 				return;
 			FlowRoom room;
-			if (roomObjectRegistry.TryGetValue(other.gameObject, out room)) {
+			if (roomObjectRegistry.TryGetValue(other.gameObject, out room))
 				room.ownedObjects.Remove(other.gameObject);
-			}
 			roomObjectRegistry.Remove(other.gameObject);
 			roomObjectRegistry.Add(other.gameObject, this);
 			ownedObjects.Add(other.gameObject);	

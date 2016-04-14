@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/testAtmoSim.unity
+- path: Assets/testNpc.unity
   isLoaded: 1
   isActive: 1
