@@ -1,3 +1,5 @@
+###### THIS HAS BEEN MOVED TO A PRIVATE REPO ON GITLAB
+
 # spaceship_sim
 Simulation of atmosphere + forces within a spaceship
 
